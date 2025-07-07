@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { GetProductionBatchesUseCase } from '../../domain/usecases/GetProductionBatchesUseCase';
+import { GetProductionBatchesUseCase } from '../../domain/usecases/production/GetProductionBatchesUseCase';
 import { ProductionBatchRepositoryFirebase } from '../../infra/repositories/ProductionBatchRepositoryFirebase';
 import { StatusKey } from '../../domain/enums/StatusKey';
 import { ProductionBatch } from '../../domain/entities/ProductionBatch';
@@ -29,7 +29,7 @@ export default function ProductionDashboardPage() {
   const [batches, setBatches] = useState<ProductionBatch[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('all');
 
-  useEffect(() => {
+  const fetchBatches = () => {
     const repo = new ProductionBatchRepositoryFirebase();
     const getBatchesUseCase = new GetProductionBatchesUseCase(repo);
     getBatchesUseCase.execute().then(batchesList => {
@@ -37,7 +37,7 @@ export default function ProductionDashboardPage() {
         [StatusKey.PLANEJADO]: 0,
         [StatusKey.AGUARDANDO]: 0,
         [StatusKey.EM_PRODUCAO]: 0,
-        [StatusKey.COLHIDO]: 0
+        [StatusKey.COLHIDO]: 0,
       };
       batchesList.forEach(batch => {
         if (statusCounts[batch.status] !== undefined) {
@@ -47,6 +47,10 @@ export default function ProductionDashboardPage() {
       setCounts(statusCounts);
       setBatches(batchesList);
     });
+  };
+
+  useEffect(() => {
+    fetchBatches();
   }, []);
 
   const filteredBatches = statusFilter === 'all'
@@ -57,7 +61,7 @@ export default function ProductionDashboardPage() {
     <div style={{ fontFamily: 'Roboto, Arial, sans-serif' }}>
       <DashboardCards counts={counts} statusLabels={STATUS_LABELS} />
       <StatusFilters statusFilters={STATUS_FILTERS} statusFilter={statusFilter} setStatusFilter={setStatusFilter} />
-      <ProductionBatchList filteredBatches={filteredBatches} statusLabels={STATUS_LABELS} />
+      <ProductionBatchList filteredBatches={filteredBatches} statusLabels={STATUS_LABELS} onStatusChange={fetchBatches} />
     </div>
   );
 } 

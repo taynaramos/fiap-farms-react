@@ -1,7 +1,7 @@
 import { IProductionBatchRepository } from '../../domain/repositories/IProductionBatchRepository';
 import { ProductionBatch } from '../../domain/entities/ProductionBatch';
 import { db } from '../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { StatusKey } from '../../domain/enums/StatusKey';
 
 export class ProductionBatchRepositoryFirebase implements IProductionBatchRepository {
@@ -23,5 +23,13 @@ export class ProductionBatchRepositoryFirebase implements IProductionBatchReposi
       doc.data().createdBy,
       doc.data().lastUpdatedAt,
     ));
+  }
+
+  async updateStatus(id: string, status: StatusKey, lastUpdatedAt: Date): Promise<void> {
+    const ref = doc(db, 'productionBatches', id);
+    await updateDoc(ref, {
+      status,
+      lastUpdatedAt: serverTimestamp(),
+    });
   }
 } 

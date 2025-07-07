@@ -1,5 +1,5 @@
-import { IProductionBatchRepository } from '../repositories/IProductionBatchRepository';
-import { ProductionBatch } from '../entities/ProductionBatch';
+import { IProductionBatchRepository } from '../../repositories/IProductionBatchRepository';
+import { ProductionBatch } from '../../entities/ProductionBatch';
 
 export class GetProductionBatchesUseCase {
   constructor(private repo: IProductionBatchRepository) {}
