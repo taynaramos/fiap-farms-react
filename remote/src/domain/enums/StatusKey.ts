@@ -3,5 +3,4 @@ export enum StatusKey {
   AGUARDANDO = 'aguardandoInicio',
   EM_PRODUCAO = 'emProducao',
   COLHIDO = 'colhido',
-  CANCELADO = 'cancelado',
 } 
