@@ -9,7 +9,7 @@ Add in each microfrontend an .env file following the .env.example
 From this directory execute:
 
 - npm run install:deps
-- npm run preview
+- npm run dev
 
 Open your browser at http://localhost:4173/ to see the amazing result
 

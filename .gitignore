@@ -28,3 +28,4 @@ dist-ssr
 
 #Env
 .env
+environment.ts
