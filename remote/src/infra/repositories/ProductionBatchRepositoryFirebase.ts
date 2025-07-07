@@ -1,7 +1,7 @@
-import { IProductionBatchRepository } from '../../domain/repositories/IProductionBatchRepository';
+import { IProductionBatchRepository } from '../../domain/repositories/production/IProductionBatchRepository';
 import { ProductionBatch } from '../../domain/entities/ProductionBatch';
-import { db } from '../firebase';
-import { collection, getDocs, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { db, auth } from '../firebase';
+import { collection, getDocs, doc, updateDoc, serverTimestamp, addDoc } from 'firebase/firestore';
 import { StatusKey } from '../../domain/enums/StatusKey';
 
 export class ProductionBatchRepositoryFirebase implements IProductionBatchRepository {
@@ -31,5 +31,33 @@ export class ProductionBatchRepositoryFirebase implements IProductionBatchReposi
       status,
       lastUpdatedAt: serverTimestamp(),
     });
+  }
+
+  async createProductionBatch(batch: Omit<ProductionBatch, 'id'>): Promise<ProductionBatch> {
+    const user = auth.currentUser;
+    if (!user) throw new Error('Usuário não autenticado');
+    const batchData = {
+      ...batch,
+      createdBy: user.uid,
+      createdAt: serverTimestamp(),
+      lastUpdatedAt: serverTimestamp(),
+    };
+    const docRef = await addDoc(collection(db, 'productionBatches'), batchData);
+    return new ProductionBatch(
+      docRef.id,
+      batch.productId,
+      batch.productName,
+      batch.status,
+      batch.estimatedQuantity,
+      batch.farmId,
+      batch.startDate,
+      batch.estimatedEndDate,
+      batch.actualHarvestDate,
+      batch.actualQuantity,
+      batch.notes,
+      new Date(),
+      user.uid,
+      new Date()
+    );
   }
 } 

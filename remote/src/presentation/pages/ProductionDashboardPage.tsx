@@ -6,13 +6,8 @@ import { ProductionBatch } from '../../domain/entities/ProductionBatch';
 import DashboardCards from '../components/productionDashboard/DashboardCards';
 import StatusFilters from '../components/productionDashboard/StatusFilters';
 import ProductionBatchList from '../components/productionDashboard/ProductionBatchList';
-
-const STATUS_LABELS: { key: StatusKey; label: string; color: string; icon: string }[] = [
-    { key: StatusKey.PLANEJADO, label: 'Planejado', color: '#2196f3', icon: '📋🕒' },
-    { key: StatusKey.AGUARDANDO, label: 'Aguardando', color: '#ff9800', icon: '🟡💬' },
-    { key: StatusKey.EM_PRODUCAO, label: 'Em Produção', color: '#4caf50', icon: '🌱🚜' },
-    { key: StatusKey.COLHIDO, label: 'Colhido', color: '#9c27b0', icon: '🟢✔️' },
-];
+import CreateProductionBatchPage from './CreateProductionBatchPage';
+import { STATUS_LABELS } from '../const/statusLabels';
 
 const STATUS_FILTERS = [
   { key: 'all', label: 'Todos' },
@@ -28,6 +23,7 @@ export default function ProductionDashboardPage() {
   });
   const [batches, setBatches] = useState<ProductionBatch[]>([]);
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [showCreate, setShowCreate] = useState(false);
 
   const fetchBatches = () => {
     const repo = new ProductionBatchRepositoryFirebase();
@@ -59,9 +55,15 @@ export default function ProductionDashboardPage() {
 
   return (
     <div style={{ fontFamily: 'Roboto, Arial, sans-serif' }}>
-      <DashboardCards counts={counts} statusLabels={STATUS_LABELS} />
-      <StatusFilters statusFilters={STATUS_FILTERS} statusFilter={statusFilter} setStatusFilter={setStatusFilter} />
-      <ProductionBatchList filteredBatches={filteredBatches} statusLabels={STATUS_LABELS} onStatusChange={fetchBatches} />
+      <DashboardCards counts={counts} statusLabels={STATUS_LABELS} /> 
+      {showCreate ? (
+        <CreateProductionBatchPage />
+      ) : (
+        <div>
+          <StatusFilters statusFilters={STATUS_FILTERS} statusFilter={statusFilter} setStatusFilter={setStatusFilter} />
+          <ProductionBatchList filteredBatches={filteredBatches} statusLabels={STATUS_LABELS} onStatusChange={fetchBatches} onAddBatch={() => setShowCreate(true)} />
+        </div>
+      )}
     </div>
   );
 } 

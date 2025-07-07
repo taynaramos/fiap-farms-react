@@ -3,11 +3,13 @@ import { ProductionBatch } from '../../../domain/entities/ProductionBatch';
 import { StatusKey } from '../../../domain/enums/StatusKey';
 import { ProductionBatchRepositoryFirebase } from '../../../infra/repositories/ProductionBatchRepositoryFirebase';
 import { UpdateProductionBatchStatusUseCase } from '../../../domain/usecases/production/UpdateProductionBatchStatusUseCase';
+import AddBatchButton from './AddBatchButton';
 
 interface ProductionBatchListProps {
   filteredBatches: ProductionBatch[];
   statusLabels: { key: StatusKey; label: string; color: string; icon: string }[];
   onStatusChange?: () => void;
+  onAddBatch?: () => void;
 }
 
 function getNextStatus(current: StatusKey): StatusKey | null {
@@ -23,7 +25,7 @@ function getNextStatus(current: StatusKey): StatusKey | null {
   }
 }
 
-export default function ProductionBatchList({ filteredBatches, statusLabels, onStatusChange }: ProductionBatchListProps) {
+export default function ProductionBatchList({ filteredBatches, statusLabels, onStatusChange, onAddBatch }: ProductionBatchListProps) {
   const handleAdvanceStatus = async (batch: ProductionBatch) => {
     const nextStatus = getNextStatus(batch.status);
     if (!nextStatus) return;
@@ -35,7 +37,10 @@ export default function ProductionBatchList({ filteredBatches, statusLabels, onS
 
   return (
     <div style={{ maxWidth: 600, margin: '0 auto' }}>
-      <h3 style={{ margin: '24px 0 12px 0', fontWeight: 700 }}>Lotes de Produção ({filteredBatches.length})</h3>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '24px 0 12px 0' }}>
+        <h3 style={{ margin: 0, fontWeight: 700 }}>Lotes de Produção ({filteredBatches.length})</h3>
+        <AddBatchButton onClick={onAddBatch} />
+      </div>
       {filteredBatches.map(batch => {
         const nextStatus = getNextStatus(batch.status);
         const nextStatusLabel = nextStatus ? statusLabels.find(s => s.key === nextStatus) : undefined;
