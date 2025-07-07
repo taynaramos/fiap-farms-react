@@ -1,0 +1,25 @@
+{
+  "name": "module-federation-vite-react-login",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 4175",
+    "build": "tsc && vite build",
+    "preview": "npm run build && vite preview --port 4175"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.11",
+    "firebase": "^11.10.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^4.1.11"
+  },
+  "devDependencies": {
+    "@module-federation/vite": "1.1.5",
+    "@types/react": "18.2.79",
+    "@types/react-dom": "18.2.25",
+    "@vitejs/plugin-react": "4.2.1",
+    "typescript": "5.4.5",
+    "vite": "5.2.10"
+  }
+}
