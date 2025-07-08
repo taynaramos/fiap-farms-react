@@ -65,7 +65,7 @@ export default function HomePage() {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" fontWeight={700} letterSpacing={1}>
-            FIAP Farms 22
+            FIAP Farms
           </Typography>
         </Toolbar>
       </AppBar>
