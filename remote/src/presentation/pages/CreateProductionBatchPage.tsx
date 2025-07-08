@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
+import { TextField, Button, MenuItem, Box, Typography, Paper, Select, InputLabel, FormControl, CircularProgress, Snackbar, Alert } from '@mui/material';
 import { StatusKey } from '../../domain/enums/StatusKey';
 import { GetProductsUseCase } from '../../domain/usecases/product/GetProductsUseCase';
 import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepositoryFirebase';
 import { Product } from '../../domain/entities/Product';
 import { STATUS_LABELS } from '../const/statusLabels';
-import { getTodayISO, getFutureISO, parseDateToBrasilia } from '../const/dateUtils';
+import { getTodayISO, getFutureISO } from '../const/dateUtils';
 import { CreateProductionBatchUseCase } from '../../domain/usecases/production/CreateProductionBatchUseCase';
 import { ProductionBatchRepositoryFirebase } from '../../infra/repositories/ProductionBatchRepositoryFirebase';
+import { auth } from '../../infra/firebase';
 
 export default function CreateProductionBatchPage() {
   const [product, setProduct] = useState('');
@@ -17,6 +19,7 @@ export default function CreateProductionBatchPage() {
   const [notes, setNotes] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
+  const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
 
   useEffect(() => {
     const repo = new ProductRepositoryFirebase();
@@ -31,48 +34,120 @@ export default function CreateProductionBatchPage() {
     if (!selectedProduct) return;
     const repo = new ProductionBatchRepositoryFirebase();
     const useCase = new CreateProductionBatchUseCase(repo);
-
-    await useCase.execute({
-      productId: selectedProduct.id,
-      productName: selectedProduct.name,
-      startDate: parseDateToBrasilia(startDate),
-      estimatedEndDate: parseDateToBrasilia(estimatedEndDate),
-      status,
-      estimatedQuantity: Number(estimatedQuantity),
-      notes
-    });
-    alert('Lote criado com sucesso!');
+    const user = auth.currentUser;
+    if (!user) {
+      setSnackbar({ open: true, message: 'Usuário não autenticado', severity: 'error' });
+      return;
+    }
+    try {
+      await useCase.execute({
+        productId: selectedProduct.id,
+        productName: selectedProduct.name,
+        startDate: new Date(startDate),
+        estimatedEndDate: new Date(estimatedEndDate),
+        status,
+        estimatedQuantity: Number(estimatedQuantity),
+        notes,
+      });
+      setSnackbar({ open: true, message: 'Lote criado com sucesso!', severity: 'success' });
+    } catch (err: any) {
+      setSnackbar({ open: true, message: err?.message || 'Erro ao criar lote', severity: 'error' });
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ maxWidth: 420, margin: '32px auto', background: '#faf7fa', borderRadius: 16, boxShadow: '0 4px 12px #0001', padding: 24 }}>
-      <h2 style={{ textAlign: 'center', color: '#4caf50', marginBottom: 24 }}>Novo Lote de Produção</h2>
-      {/* Produto */}
-      <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Produto *</label>
-      <select value={product} onChange={e => setProduct(e.target.value)} required style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', marginBottom: 16 }} disabled={loadingProducts}>
-        <option value="">Selecione um produto</option>
-        {products.map(opt => <option key={opt.id} value={opt.id}>{opt.name}</option>)}
-      </select>
-      {/* Data de início */}
-      <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Data de Início *</label>
-      <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} required style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', marginBottom: 16 }} />
-      {/* Data estimada de colheita */}
-      <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Data Estimada de Colheita *</label>
-      <input type="date" value={estimatedEndDate} onChange={e => setEstimatedEndDate(e.target.value)} required style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', marginBottom: 16 }} />
-      {/* Quantidade estimada */}
-      <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Quantidade Estimada *</label>
-      <input type="number" min="0" step="0.01" value={estimatedQuantity} onChange={e => setEstimatedQuantity(e.target.value)} required placeholder="0,0" style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', marginBottom: 16 }} />
-      {/* Status inicial */}
-      <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Status Inicial</label>
-      <select value={status} onChange={e => setStatus(e.target.value as StatusKey)} style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', marginBottom: 16 }}>
-        {STATUS_LABELS.map(opt => <option key={opt.key} value={opt.key}>{opt.icon} {opt.label}</option>)}
-      </select>
-      {/* Observações */}
-      <label style={{ fontWeight: 500, marginBottom: 4, display: 'block' }}>Observações</label>
-      <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Informações adicionais sobre o lote..." style={{ width: '100%', padding: 8, borderRadius: 8, border: '1px solid #ccc', marginBottom: 24, minHeight: 60 }} />
-      <button type="submit" style={{ width: '100%', background: '#4caf50', color: '#fff', border: 'none', borderRadius: 8, padding: '12px 0', fontWeight: 700, fontSize: 16, cursor: 'pointer', marginTop: 8 }}>
-        Criar Lote de Produção
-      </button>
-    </form>
+    <Paper elevation={3} sx={{ maxWidth: 420, mx: 'auto', my: 4, p: 3, borderRadius: 2 }}>
+      <Typography variant="h5" align="center" color="primary" fontWeight={700} mb={3}>
+        Novo Lote de Produção
+      </Typography>
+      <Box component="form" onSubmit={handleSubmit} noValidate>
+        <FormControl fullWidth margin="normal">
+          <InputLabel id="product-label">Produto *</InputLabel>
+          <Select
+            labelId="product-label"
+            value={product}
+            label="Produto *"
+            onChange={e => setProduct(e.target.value)}
+            required
+            disabled={loadingProducts}
+          >
+            <MenuItem value="">Selecione um produto</MenuItem>
+            {products.map(opt => (
+              <MenuItem key={opt.id} value={opt.id}>{opt.name}</MenuItem>
+            ))}
+          </Select>
+          {loadingProducts && <CircularProgress size={24} sx={{ position: 'absolute', right: 16, top: 16 }} />}
+        </FormControl>
+        <TextField
+          label="Data de Início *"
+          type="date"
+          value={startDate}
+          onChange={e => setStartDate(e.target.value)}
+          fullWidth
+          margin="normal"
+          InputLabelProps={{ shrink: true }}
+          required
+        />
+        <TextField
+          label="Data Estimada de Colheita *"
+          type="date"
+          value={estimatedEndDate}
+          onChange={e => setEstimatedEndDate(e.target.value)}
+          fullWidth
+          margin="normal"
+          InputLabelProps={{ shrink: true }}
+          required
+        />
+        <TextField
+          label="Quantidade Estimada *"
+          type="number"
+          inputProps={{ min: 0, step: 0.01 }}
+          value={estimatedQuantity}
+          onChange={e => setEstimatedQuantity(e.target.value)}
+          fullWidth
+          margin="normal"
+          required
+        />
+        <FormControl fullWidth margin="normal">
+          <InputLabel id="status-label">Status Inicial</InputLabel>
+          <Select
+            labelId="status-label"
+            value={status}
+            label="Status Inicial"
+            onChange={e => setStatus(e.target.value as StatusKey)}
+          >
+            {STATUS_LABELS.map(opt => (
+              <MenuItem key={opt.key} value={opt.key}>
+                {opt.icon} {opt.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <TextField
+          label="Observações"
+          value={notes}
+          onChange={e => setNotes(e.target.value)}
+          fullWidth
+          margin="normal"
+          multiline
+          minRows={3}
+          placeholder="Informações adicionais sobre o lote..."
+        />
+        <Button
+          type="submit"
+          variant="contained"
+          color="success"
+          fullWidth
+          sx={{ mt: 2, fontWeight: 700, fontSize: 16 }}
+        >
+          Criar Lote de Produção
+        </Button>
+      </Box>
+      <Snackbar open={snackbar.open} autoHideDuration={4000} onClose={() => setSnackbar(s => ({ ...s, open: false }))} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert onClose={() => setSnackbar(s => ({ ...s, open: false }))} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Paper>
   );
 } 
