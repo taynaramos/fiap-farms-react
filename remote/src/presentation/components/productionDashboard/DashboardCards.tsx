@@ -1,4 +1,5 @@
 import React from 'react';
+import { Card, CardContent, Typography, Box } from '@mui/material';
 import { StatusKey } from '../../../domain/enums/StatusKey';
 
 interface DashboardCardsProps {
@@ -8,24 +9,68 @@ interface DashboardCardsProps {
 
 export default function DashboardCards({ counts, statusLabels }: DashboardCardsProps) {
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32, justifyContent: 'center', marginTop: 40 }}>
+    <Box sx={{ 
+      display: 'flex', 
+      flexWrap: 'wrap', 
+      gap: 4, 
+      justifyContent: 'center', 
+      mt: 5 
+    }}>
       {statusLabels.map(({ key, label, color, icon }) => (
-        <div key={key} style={{
-          background: '#faf7fa',
-          borderRadius: 16,
-          boxShadow: '0 4px 12px #0001',
-          width: 240,
-          height: 150,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>{icon}</div>
-          <div style={{ fontSize: 32, color, fontWeight: 700 }}>{counts[key]}</div>
-          <div style={{ fontSize: 18, color: '#444', marginTop: 4 }}>{label}</div>
-        </div>
+        <Card
+          key={key}
+          sx={{
+            width: 240,
+            height: 150,
+            bgcolor: '#faf7fa',
+            borderRadius: 2,
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'transform 0.2s ease-in-out',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)',
+            },
+          }}
+        >
+          <CardContent sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            justifyContent: 'center',
+            height: '100%',
+            p: 2,
+          }}>
+            <Typography variant="h3" sx={{ mb: 1, fontSize: 32 }}>
+              {icon}
+            </Typography>
+            <Typography 
+              variant="h3" 
+              sx={{ 
+                fontSize: 32, 
+                color, 
+                fontWeight: 700,
+                mb: 0.5,
+              }}
+            >
+              {counts[key]}
+            </Typography>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                fontSize: 18, 
+                color: '#444',
+                textAlign: 'center',
+              }}
+            >
+              {label}
+            </Typography>
+          </CardContent>
+        </Card>
       ))}
-    </div>
+    </Box>
   );
 } 
