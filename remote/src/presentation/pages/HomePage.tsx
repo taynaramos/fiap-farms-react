@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ProductionDashboardPage from './ProductionDashboardPage';
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Box, CssBaseline, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import CreateProductPage from './CreateProductPage';
 
 const MENU_ITEMS = [
   { key: 'dashboard-vendas', label: 'Dashboard de Vendas', icon: '📊' },
@@ -89,6 +90,7 @@ export default function HomePage() {
       </Drawer>
       <Box component="main" sx={{ flex: 1, p: 4, mt: 7 }}>
         {selected === 'dashboard-producao' && <ProductionDashboardPage />}
+        {selected === 'cadastrar-produto' && <CreateProductPage />}
         {/* Adicione outros conteúdos para as demais páginas aqui */}
       </Box>
     </Box>
