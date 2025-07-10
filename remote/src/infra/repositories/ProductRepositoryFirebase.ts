@@ -1,6 +1,6 @@
 import { IProductRepository } from '../../domain/repositories/product/IProductRepository';
 import { Product } from '../../domain/entities/Product';
-import { db } from '../firebase';
+import { db } from 'shared/firebase';
 import { collection, getDocs, query, where, orderBy, addDoc } from 'firebase/firestore';
 
 export class ProductRepositoryFirebase implements IProductRepository {

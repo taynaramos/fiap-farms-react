@@ -9,5 +9,11 @@
     "build": "pnpm --filter module-federation-vite-react-* build",
     "preview": "pnpm --filter module-federation-vite-react-* preview"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^7.0.3"
+  },
+  "dependencies": {
+    "firebase": "^11.10.0"
+  }
 }
