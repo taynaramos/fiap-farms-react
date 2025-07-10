@@ -1,6 +1,6 @@
-import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
+import { FirebaseApp, getApp, getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore, Firestore } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 
 export const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,18 +11,30 @@ export const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const app: FirebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+// Inicializar o app Firebase
+let app: FirebaseApp;
 
-// 🔐 Segurança extra: evite chamadas antecipadas a getFirestore()
-let db: Firestore;
-console.log("Apps:", getApps().length); // deve ser 1
-console.log("App name:", app.name);     // deve ser "[DEFAULT]"
-
-try {
-  db = getFirestore(app);
-} catch (error) {
-  console.error("Erro ao inicializar Firestore:", error);
+if (getApps().length === 0) {
+  app = initializeApp(firebaseConfig);
+  console.log("Firebase app inicializado:", app.name);
+} else {
+  app = getApp();
+  console.log("Firebase app já existente:", app.name);
 }
 
+// Inicializar Auth primeiro
 export const auth = getAuth(app);
-export { db };
+
+// Inicializar Firestore
+export const db = getFirestore(app);
+
+// Conectar aos emuladores em desenvolvimento (opcional)
+if (import.meta.env.DEV) {
+  try {
+    // Descomente as linhas abaixo se quiser usar emuladores locais
+    // connectAuthEmulator(auth, "http://localhost:9099");
+    // connectFirestoreEmulator(db, "localhost", 8080);
+  } catch (error) {
+    console.warn("Erro ao conectar aos emuladores:", error);
+  }
+}

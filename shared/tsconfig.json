@@ -15,10 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "shared/*": ["../shared/*"]
-    },
+    "composite": true
   },
-  "include": ["src", "../shared/*.ts"]
-}
+  "include": ["*.ts", "*.tsx"]
+} 

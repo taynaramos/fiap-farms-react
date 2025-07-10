@@ -44,6 +44,15 @@ export default defineConfig(({ mode }) => {
             requiredVersion: pkg.dependencies.firebase,
             singleton: true,
           },
+          "react-dom": {
+            requiredVersion: pkg.dependencies["react-dom"],
+            singleton: true,
+          },
+          // React Router DOM
+          "react-router-dom": {
+            requiredVersion: pkg.dependencies["react-router-dom"],
+            singleton: true,
+          },
         },
       }),
       react(),
