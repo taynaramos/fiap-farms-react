@@ -1,5 +1,4 @@
 import { federation } from "@module-federation/vite";
-import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { writeFileSync } from "fs";
 import path from "path";
@@ -44,7 +43,6 @@ export default defineConfig(({ mode }) => {
         },
       }),
       react(),
-      tailwindcss(),
     ],
     define: {
       "import.meta.env": {
