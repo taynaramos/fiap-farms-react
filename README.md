@@ -21,5 +21,5 @@ Open your browser at http://localhost:4173/ to see the result
 
 To remove all the node_modules directories at once:
 
-- rm -rf node_modules &&  cd shared && rm -rf node_modules  && cd host && rm -rf node_modules && cd ../remote && rm -rf node_modules && cd ../login && rm -rf node_modules && cd ../shared && rm -rf node_modules && cd ..
+- rm -rf node_modules && cd shared && rm -rf node_modules  && cd ../host && rm -rf node_modules && cd ../remote && rm -rf node_modules && cd ../login && rm -rf node_modules && cd ../shared && rm -rf node_modules && cd ..
 
