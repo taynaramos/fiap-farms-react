@@ -1,8 +1,10 @@
 import { federation } from "@module-federation/vite";
 import react from "@vitejs/plugin-react";
+import { readFileSync } from "fs";
 import path from "path";
 import { defineConfig, loadEnv } from "vite";
-import { dependencies } from "./package.json";
+
+const pkg = JSON.parse(readFileSync("./package.json", "utf-8"));
 
 export default defineConfig(({ mode }) => {
   const selfEnv = loadEnv(mode, process.cwd());
@@ -35,11 +37,11 @@ export default defineConfig(({ mode }) => {
         filename: "remoteEntry.js",
         shared: {
           react: {
-            requiredVersion: dependencies.react,
+            requiredVersion: pkg.dependencies.react,
             singleton: true,
           },
           firebase: {
-            requiredVersion: dependencies.firebase,
+            requiredVersion: pkg.dependencies.firebase,
             singleton: true,
           },
         },
