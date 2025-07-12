@@ -57,6 +57,15 @@ export default defineConfig(({ mode }) => {
             requiredVersion: pkg.dependencies.firebase,
             singleton: true,
           },
+          "firebase/app": {
+            singleton: true,
+          },
+          "firebase/auth": {
+            singleton: true,
+          },
+          "firebase/firestore": {
+            singleton: true,
+          },
         },
       }),
       react(),

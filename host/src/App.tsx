@@ -1,6 +1,6 @@
 import { onAuthStateChanged } from 'firebase/auth';
 import { lazy, Suspense, useEffect, useState } from "react";
-import { auth } from './firebase';
+import { auth } from 'shared/firebase';
 
 const Remote = lazy(
   // @ts-ignore

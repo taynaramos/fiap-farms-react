@@ -8,7 +8,7 @@ import { STATUS_LABELS } from '../const/statusLabels';
 import { getTodayISO, getFutureISO } from '../const/dateUtils';
 import { CreateProductionBatchUseCase } from '../../domain/usecases/production/CreateProductionBatchUseCase';
 import { ProductionBatchRepositoryFirebase } from '../../infra/repositories/ProductionBatchRepositoryFirebase';
-import { auth } from '../../infra/firebase';
+import { auth } from 'shared/firebase';
 
 export default function CreateProductionBatchPage() {
   const [product, setProduct] = useState('');
