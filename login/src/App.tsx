@@ -4,22 +4,9 @@ import Login from "./presentation/pages/Login";
 
 export default () => {
   const [isCreateAccount, setIsCreateAccount] = useState(false);
-  console.log(import.meta.env.VITE_FIREBASE_APP_ID);
 
   return (
-    <div
-      style={{
-        background: "#1f2124",
-        boxShadow: "0 0 20px rgba(0, 0, 0, 0.4)",
-        borderRadius: "5px",
-        margin: "20px 20px 20px 20px",
-        width: "250px",
-        padding: "20px",
-        textAlign: "center",
-        color: "white",
-        float: "left",
-      }}
-    >
+    <div>
       {!isCreateAccount && (
         <>
           <Login />
