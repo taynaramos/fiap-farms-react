@@ -41,6 +41,18 @@ export default defineConfig(({ mode }) => {
             requiredVersion: pkg.dependencies.react,
             singleton: true,
           },
+          "react-dom": {
+            requiredVersion: pkg.dependencies["react-dom"],
+            singleton: true,
+          },
+          "@emotion/react": {
+            requiredVersion: pkg.dependencies["@emotion/react"],
+            singleton: true,
+          },
+          "@emotion/styled": {
+            requiredVersion: pkg.dependencies["@emotion/styled"],
+            singleton: true,
+          },
           firebase: {
             requiredVersion: pkg.dependencies.firebase,
             singleton: true,
