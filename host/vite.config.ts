@@ -65,6 +65,10 @@ export default defineConfig(({ mode }) => {
           "firebase/firestore": {
             singleton: true,
           },
+          "react-router-dom": {
+            requiredVersion: pkg.dependencies["react-router-dom"],
+            singleton: true,
+          },
         },
       }),
       react(),

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "shared/firebase";
-
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Container,
@@ -12,11 +12,13 @@ import {
   Stack,
   Alert,
 } from "@mui/material";
+import Routes from "shared/routes";
 
 export default function CreateAccountPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const createAccount = async () => {
     setError("");
@@ -31,10 +33,15 @@ export default function CreateAccountPage() {
     }
 
     try {
-      const newUser = await createUserWithEmailAndPassword(auth, email, password);
+      const newUser = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
       window.dispatchEvent(
         new CustomEvent("user-logged-in", { detail: newUser })
       );
+      navigate(Routes.paths.home);
     } catch (error) {
       setError("Erro ao criar conta. Tente novamente.");
     }
@@ -89,7 +96,7 @@ export default function CreateAccountPage() {
               variant="text"
               color="success"
               fullWidth
-              onClick={() => console.log("/login")}
+              onClick={() => navigate("/login")}
             >
               Voltar ao login
             </Button>

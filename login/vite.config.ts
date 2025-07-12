@@ -33,7 +33,8 @@ export default defineConfig(({ mode }) => {
         filename: "remoteEntry.js",
         name: "login",
         exposes: {
-          "./login-app": "./src/App.tsx",
+          "./login": "./src/presentation/pages/Login.tsx",
+          "./create-account": "./src/presentation/pages/CreateAccount.tsx",
         },
         remotes: {},
         shared: {
@@ -64,6 +65,10 @@ export default defineConfig(({ mode }) => {
             singleton: true,
           },
           "firebase/firestore": {
+            singleton: true,
+          },
+          "react-router-dom": {
+            requiredVersion: pkg.dependencies["react-router-dom"],
             singleton: true,
           },
         },
