@@ -1,7 +1,6 @@
-// src/components/Login.tsx
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { auth } from "../firebase";
+import { auth } from "../../firebase";
 
 export default function Login() {
   const [email, setEmail] = useState("");

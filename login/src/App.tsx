@@ -1,6 +1,6 @@
 import { useState } from "react";
-import CreateAccount from "./components/CreateAccount";
-import Login from "./components/Login";
+import CreateAccount from "./presentation/pages/CreateAccount";
+import Login from "./presentation/pages/Login";
 
 export default () => {
   const [isCreateAccount, setIsCreateAccount] = useState(false);
