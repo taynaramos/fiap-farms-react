@@ -45,7 +45,7 @@ export default function ProductProfitList({ productsWithProfit }: ProductProfitL
             <Avatar sx={{ bgcolor: statusColor, width: 32, height: 32, mr: 2 }}>{statusIcon}</Avatar>
             <Box flex={1}>
               <Typography fontWeight={600}>{product.productName} <Chip label={statusText} size="small" sx={{ ml: 1, bgcolor: statusColor, color: '#fff' }} /></Typography>
-              <Typography variant="body2" color="text.secondary">{product.unitOfMeasure}</Typography>
+              <Typography variant="body2" color="text.secondary">{product.category} - {product.unitOfMeasure}</Typography>
             </Box>
             <Box textAlign="right">
               <Typography fontWeight={700} color={statusColor}>R$ {product.profit.toFixed(2)}</Typography>

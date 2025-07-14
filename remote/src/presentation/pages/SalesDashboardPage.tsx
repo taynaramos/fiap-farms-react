@@ -9,6 +9,9 @@ import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import { SalesRecord } from '../../domain/entities/SalesRecord';
 import { SalesRecordRepositoryFirebase } from '../../infra/repositories/SalesRecordRepositoryFirebase';
 import { GetSalesRecordsUseCase } from '../../domain/usecases/sales/GetSalesRecordsUseCase';
+import { Product } from '../../domain/entities/Product';
+import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepositoryFirebase';
+import { GetProductsUseCase } from '../../domain/usecases/product/GetProductsUseCase';
 import IndicatorCard from '../components/salesDashboard/IndicatorCard';
 import ComparisonCard from '../components/salesDashboard/ComparisonCard';
 import ProductProfitList from '../components/salesDashboard/ProductProfitList';
@@ -73,26 +76,35 @@ interface ProductProfit {
 
 export default function SalesDashboardPage() {
   const [sales, setSales] = useState<SalesRecord[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState('Mês');
 
   useEffect(() => {
-    async function fetchSales() {
+    async function fetchData() {
       setLoading(true);
-      const repo = new SalesRecordRepositoryFirebase();
-      const usecase = new GetSalesRecordsUseCase(repo);
-      const salesList = await usecase.execute();
+      const salesRepo = new SalesRecordRepositoryFirebase();
+      const salesUsecase = new GetSalesRecordsUseCase(salesRepo);
+      const productRepo = new ProductRepositoryFirebase();
+      const productUsecase = new GetProductsUseCase(productRepo);
+      const [salesList, productsList] = await Promise.all([
+        salesUsecase.execute(),
+        productUsecase.execute(),
+      ]);
       setSales(salesList);
+      setProducts(productsList);
       setLoading(false);
     }
-    fetchSales();
+    fetchData();
   }, []);
 
   if (loading) {
     return <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh"><CircularProgress /></Box>;
   }
 
-  
+  const productsMap: Record<string, Product> = {};
+  products.forEach(p => { productsMap[p.id] = p; });
+
   const totalSales = sales.reduce((sum, sale) => sum + (sale.totalSaleAmount || 0), 0);
   const totalProfit = sales.reduce((sum, sale) => sum + (sale.calculatedProfit || 0), 0);
   const orders = sales.length;
@@ -101,22 +113,27 @@ export default function SalesDashboardPage() {
   const previousPeriodSales = sales.filter(sale => isInPreviousPeriod(new Date(sale.saleDate?.toDate?.() || sale.saleDate), selectedPeriod, now)).reduce((sum, sale) => sum + (sale.totalSaleAmount || 0), 0);
   const growth = previousPeriodSales > 0 ? (currentPeriodSales - previousPeriodSales) / previousPeriodSales : 0;
 
-  
-  const productsMap: Record<string, ProductProfit> = {};
+  const profitMap: Record<string, { profit: number; totalCost: number; totalSold: number; }> = {};
   sales.forEach(sale => {
-    if (!productsMap[sale.productId]) {
-      productsMap[sale.productId] = {
-        productId: sale.productId,
-        productName: sale.productName,
-        unitOfMeasure: sale.unitOfMeasure,
-        profit: 0,
-        estimatedCostPerUnit: sale.estimatedCostAtSale / (sale.quantitySold || 1),
-      };
+    if (!profitMap[sale.productId]) {
+      profitMap[sale.productId] = { profit: 0, totalCost: 0, totalSold: 0 };
     }
-    productsMap[sale.productId].profit += sale.calculatedProfit || 0;
+    profitMap[sale.productId].profit += sale.calculatedProfit || 0;
+    profitMap[sale.productId].totalCost += sale.estimatedCostAtSale || 0;
+    profitMap[sale.productId].totalSold += sale.quantitySold || 0;
   });
-  let productsWithProfit = Object.values(productsMap);
-  
+  let productsWithProfit = Object.keys(profitMap).map(productId => {
+    const product = productsMap[productId];
+    return {
+      productId,
+      productName: product ? product.name : 'Produto removido',
+      unitOfMeasure: product ? product.unitOfMeasure : '',
+      category: product ? product.category : '',
+      profit: profitMap[productId].profit,
+      estimatedCostPerUnit: product ? product.estimatedCostPerUnit : 0,
+    };
+  });
+
   productsWithProfit = productsWithProfit.sort((a, b) => {
     if (a.profit > 0 && b.profit > 0) return b.profit - a.profit;
     if (a.profit > 0) return -1;
