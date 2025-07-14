@@ -16,7 +16,6 @@ import IndicatorCard from '../components/salesDashboard/IndicatorCard';
 import ComparisonCard from '../components/salesDashboard/ComparisonCard';
 import ProductProfitList from '../components/salesDashboard/ProductProfitList';
 import ProductProfitBarChart from '../components/salesDashboard/ProductProfitBarChart';
-import Grid from '@mui/material/Grid';
 
 const PERIODS = ['Dia', 'Semana', 'Mês', 'Ano'];
 
@@ -155,20 +154,20 @@ export default function SalesDashboardPage() {
     <Box p={3}>
       <Typography variant="h4" fontWeight={700} mb={2}>Dashboard de Vendas</Typography>
       
-      <Grid container spacing={2} mb={3}>
-        <Grid item xs={12} sm={6} md={3}>
+      <Box display="flex" flexWrap="wrap" gap={2} mb={3}>
+        <Box flex="1 1 200px" minWidth={200}>
           <IndicatorCard title="Vendas" value={`R$ ${totalSales.toFixed(2)}`} icon={<ShoppingCartIcon color="primary" />} />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </Box>
+        <Box flex="1 1 200px" minWidth={200}>
           <IndicatorCard title="Lucro" value={`R$ ${totalProfit.toFixed(2)}`} icon={<AttachMoneyIcon color="primary" />} />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </Box>
+        <Box flex="1 1 200px" minWidth={200}>
           <IndicatorCard title="Quantidade de Vendas" value={orders.toString()} icon={<ReceiptLongIcon color="primary" />} />
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
+        </Box>
+        <Box flex="1 1 200px" minWidth={200}>
           <IndicatorCard title="Crescimento" value={`${(growth * 100).toFixed(1)}%`} icon={<TrendingUpIcon color="primary" />} />
-        </Grid>
-      </Grid>
+        </Box>
+      </Box>
       <Box mb={3}>
         <Typography variant="h6" fontWeight={700}>Produtos e Lucratividade</Typography>
         <Box mt={1} mb={1} sx={{ background: 'rgba(75, 151, 66, 0.1)', borderRadius: 2, p: 2 }}>
@@ -202,10 +201,14 @@ export default function SalesDashboardPage() {
       </Box>
       <Box mb={2}>
         <Typography variant="h6" fontWeight={700}>Comparação de Lucro</Typography>
-        <Grid container spacing={2} mt={1}>
-          <Grid item xs={12} sm={6}><ComparisonCard label="Período Anterior" value={previousPeriodSales} /></Grid>
-          <Grid item xs={12} sm={6}><ComparisonCard label="Período Atual" value={currentPeriodSales} /></Grid>
-        </Grid>
+        <Box display="flex" flexWrap="wrap" gap={2} mt={1}>
+          <Box flex="1 1 200px" minWidth={200}>
+            <ComparisonCard label="Período Anterior" value={previousPeriodSales} />
+          </Box>
+          <Box flex="1 1 200px" minWidth={200}>
+            <ComparisonCard label="Período Atual" value={currentPeriodSales} />
+          </Box>
+        </Box>
       </Box>
       <Box>
         <Typography variant="h6" fontWeight={700}>Análise Detalhada</Typography>
