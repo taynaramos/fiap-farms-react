@@ -1,6 +1,6 @@
 import { ISalesRecordRepository } from '../../domain/repositories/sales/ISalesRecordRepository';
 import { SalesRecord } from '../../domain/entities/SalesRecord';
-import { db } from '../firebase';
+import { db } from 'shared/firebase';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 
 export class SalesRecordRepositoryFirebase implements ISalesRecordRepository {
