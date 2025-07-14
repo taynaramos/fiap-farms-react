@@ -6,14 +6,11 @@ This project is built using module federation with vite and react to create the 
 
 Add in each microfrontend an .env file following the .env.example
 
-Enter in shared directory and execute:
+From root directory execute:
 
-- npm install
-
-Go back to the root. From this directory execute:
-
-- npm run install:deps
-- npm run dev
+- cd shared && npm install && cd ..
+- pnpm run install:deps
+- pnpm run dev
 
 Open your browser at http://localhost:4173/ to see the result
 
