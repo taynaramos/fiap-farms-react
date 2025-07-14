@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase";
+import { auth } from "shared/firebase";
+import { useNavigate } from "react-router-dom";
 
 import {
   Box,
@@ -12,6 +13,7 @@ import {
   Stack,
   Alert,
 } from "@mui/material";
+import Routes from "shared/routes";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -19,7 +21,7 @@ export default function LoginPage() {
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [firebaseError, setFirebaseError] = useState("");
-
+  const navigate = useNavigate();
 
   const validateFields = () => {
     let isValid = true;
@@ -46,10 +48,10 @@ export default function LoginPage() {
 
     try {
       const userCred = await signInWithEmailAndPassword(auth, email, password);
-      console.log("Usuário logado:", userCred.user);
       window.dispatchEvent(
         new CustomEvent("user-logged-in", { detail: userCred })
       );
+      navigate(Routes.paths.home);
     } catch (error) {
       console.error("Erro ao logar:", error);
       setFirebaseError("Erro ao fazer login. Verifique suas credenciais.");
@@ -109,7 +111,7 @@ export default function LoginPage() {
               variant="text"
               color="success"
               fullWidth
-              onClick={() => console.log("/create-account")}
+              onClick={() => navigate("/create-account")}
             >
               Criar conta
             </Button>
