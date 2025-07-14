@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ProductionDashboardPage from './ProductionDashboardPage';
+import SalesDashboardPage from './SalesDashboardPage';
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Box, CssBaseline, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CreateProductPage from './CreateProductPage';
@@ -89,6 +90,7 @@ export default function HomePage() {
         {drawer}
       </Drawer>
       <Box component="main" sx={{ flex: 1, p: 4, mt: 7 }}>
+        {selected === 'dashboard-vendas' && <SalesDashboardPage />}
         {selected === 'dashboard-producao' && <ProductionDashboardPage />}
         {selected === 'cadastrar-produto' && <CreateProductPage />}
         {/* Adicione outros conteúdos para as demais páginas aqui */}
