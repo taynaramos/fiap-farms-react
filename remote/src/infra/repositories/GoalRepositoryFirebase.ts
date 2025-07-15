@@ -32,4 +32,21 @@ export class GoalRepositoryFirebase implements IGoalRepository {
     const { id, ...goalData } = goal;
     await updateDoc(goalRef, goalData);
   }
+
+  async getActiveGoalsByProduct(productId: string): Promise<Goal[]> {
+    const snapshot = await getDocs(this.goalsCollection);
+    return snapshot.docs
+      .map(docSnap => {
+        const data = docSnap.data();
+        return {
+          id: docSnap.id,
+          ...data,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          createdAt: data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt),
+          achievedAt: data.achievedAt?.toDate ? data.achievedAt.toDate() : data.achievedAt ? new Date(data.achievedAt) : undefined,
+        } as Goal;
+      })
+      .filter(goal => goal.entityId === productId && goal.status === 'ativa');
+  }
 } 

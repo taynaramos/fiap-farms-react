@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, TextField, MenuItem, Button, Snackbar, Alert, LinearProgress, Switch, FormControlLabel, Divider, List, ListItem, ListItemText, Chip } from '@mui/material';
-import { Goal } from '../../domain/entities/Goal';
+import { Goal, GoalStatus } from '../../domain/entities/Goal';
 import { GoalRepositoryFirebase } from '../../infra/repositories/GoalRepositoryFirebase';
 import { CreateGoalUseCase } from '../../domain/usecases/goal/CreateGoalUseCase';
 import { GetGoalsUseCase } from '../../domain/usecases/goal/GetGoalsUseCase';
@@ -9,6 +9,7 @@ import { GetProductsUseCase } from '../../domain/usecases/product/GetProductsUse
 import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepositoryFirebase';
 import { Product } from '../../domain/entities/Product';
 import { parseDateToBrasilia, toDateString } from '../const/dateUtils';
+import { UNITS } from '../const/units';
 
 const TYPE_OPTIONS = [
   { value: 'vendas', label: 'Vendas' },
@@ -17,7 +18,7 @@ const TYPE_OPTIONS = [
 
 export default function GoalsPage() {
   const [goals, setGoals] = useState<Goal[]>([]);
-  const [form, setForm] = useState<Partial<Goal>>({ type: 'vendas', targetUnit: 'unidade', status: 'ativa' });
+  const [form, setForm] = useState<Partial<Goal>>({ type: 'producao', targetUnit: 'kg', status: GoalStatus.ATIVA });
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
   const [showHistory, setShowHistory] = useState(false);
@@ -53,9 +54,11 @@ export default function GoalsPage() {
 
   // Notificação simples (alerta visual)
   useEffect(() => {
+    console.log("useEffect")
     if (notifyOnAchieve) {
       goals.forEach(goal => {
-        if (goal.status === 'atingida' && !goal.achievedAt) {
+        console.log("goal.achievedAt", goal.achievedAt)
+        if (goal.status === GoalStatus.ATINGIDA && !goal.achievedAt) {
           setSnackbar({ open: true, message: `Meta atingida: ${goal.name}`, severity: 'success' });
           // Atualiza achievedAt para não notificar novamente
           updateGoalUseCase.execute({ ...goal, achievedAt: new Date() });
@@ -79,11 +82,11 @@ export default function GoalsPage() {
         createdBy: 'admin', // TODO: Ajustar para usuário real
         startDate: parseDateToBrasilia(toDateString(form.startDate!)),
         endDate: parseDateToBrasilia(toDateString(form.endDate!)),
-        status: 'ativa',
+        status: GoalStatus.ATIVA,
       } as Goal;
       await createGoalUseCase.execute(goal);
       setSnackbar({ open: true, message: 'Meta criada com sucesso!', severity: 'success' });
-      setForm({ type: 'vendas', targetUnit: 'unidade', status: 'ativa' });
+      setForm({ type: 'vendas', targetUnit: 'unidade', status: GoalStatus.ATIVA });
       fetchGoals();
     } catch (e: any) {
       setSnackbar({ open: true, message: e.message || 'Erro ao criar meta', severity: 'error' });
@@ -92,8 +95,8 @@ export default function GoalsPage() {
     }
   };
 
-  const metasAtivas = goals.filter(g => g.status === 'ativa' || g.status === 'atingida');
-  const metasAtingidas = goals.filter(g => g.status === 'atingida');
+  const metasAtivas = goals.filter(g => g.status === GoalStatus.ATIVA || g.status === GoalStatus.ATINGIDA);
+  const metasAtingidas = goals.filter(g => g.status === GoalStatus.ATINGIDA);
 
   return (
     <Box sx={{ maxWidth: 900, mx: 'auto', mt: 4 }}>
@@ -112,7 +115,9 @@ export default function GoalsPage() {
             ))}
           </TextField>
           <TextField label="Valor da Meta" type="number" value={form.targetValue || ''} onChange={e => handleFormChange('targetValue', Number(e.target.value))} required sx={{ flex: 1, minWidth: 120 }} />
-          <TextField label="Unidade" value={form.targetUnit || ''} onChange={e => handleFormChange('targetUnit', e.target.value)} required sx={{ flex: 1, minWidth: 120 }} />
+          <TextField select label="Unidade" value={form.targetUnit || ''} onChange={e => handleFormChange('targetUnit', e.target.value)} required sx={{ flex: 1, minWidth: 120 }}>
+            {UNITS.map(opt => <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>)}
+          </TextField>
           <TextField label="Data de Início" type="date" value={form.startDate || ''} onChange={e => handleFormChange('startDate', e.target.value)} required sx={{ flex: 1, minWidth: 160 }} InputLabelProps={{ shrink: true }} />
           <TextField label="Data Final" type="date" value={form.endDate || ''} onChange={e => handleFormChange('endDate', e.target.value)} required sx={{ flex: 1, minWidth: 160 }} InputLabelProps={{ shrink: true }} />
           <Button type="submit" variant="contained" color="primary" disabled={loading} sx={{ height: 56, alignSelf: 'end', fontWeight: 700 }}>Salvar Meta</Button>
@@ -135,6 +140,9 @@ export default function GoalsPage() {
                     primary={<>
                       <Typography fontWeight={700}>{goal.name}</Typography>
                       <Typography variant="body2" color="text.secondary">{goal.type === 'vendas' ? 'Vendas' : 'Produção'}</Typography>
+                      <Typography variant="body2" color="text.secondary">Valor da meta: {goal.targetValue} {goal.targetUnit}</Typography>
+                      <Typography variant="body2" color="text.secondary">Valor atingido: {goal.currentValue} {goal.targetUnit}</Typography>
+                      <Typography variant="body2" color="text.secondary">Produto: {products.find(p => p.id === goal.entityId)?.name || goal.entityId}</Typography>
                     </>}
                     secondary={<>
                       <Box display="flex" alignItems="center" gap={2} mt={1}>
@@ -165,6 +173,7 @@ export default function GoalsPage() {
                   primary={<Typography fontWeight={700}>{goal.name}</Typography>}
                   secondary={<>
                     <Typography variant="body2" color="text.secondary">{goal.type === 'vendas' ? 'Vendas' : 'Produção'}</Typography>
+                    <Typography variant="body2" color="text.secondary">Produto: {products.find(p => p.id === goal.entityId)?.name || goal.entityId}</Typography>
                     <Typography variant="caption" color="text.secondary">Atingida em: {goal.achievedAt ? new Date(goal.achievedAt).toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo' }) : '-'}</Typography>
                   </>}
                 />

@@ -7,6 +7,7 @@ import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepos
 import { CreateProductUseCase } from '../../domain/usecases/product/CreateProductUseCase';
 import CategoryIcon from '@mui/icons-material/Category';
 import StraightenIcon from '@mui/icons-material/Straighten';
+import { UNITS } from '../const/units';
 
 const CATEGORIES = [
   { value: 'hortalicas', label: 'Hortaliças' },
@@ -15,15 +16,6 @@ const CATEGORIES = [
   { value: 'graos', label: 'Legumes' },
   { value: 'graos', label: 'Tubérculos' },
   { value: 'outros', label: 'Outros' },
-];
-
-const UNITS = [
-  { value: 'kg', label: 'kg' },
-  { value: 'unidade', label: 'unidade' },
-  { value: 'molho', label: 'molho' },
-  { value: 'litro', label: 'litro' },
-  { value: 'caixa', label: 'caixa' },
-  { value: 'saca', label: 'saca' },
 ];
 
 export default function CreateProductPage() {

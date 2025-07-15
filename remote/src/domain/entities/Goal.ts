@@ -1,3 +1,10 @@
+export enum GoalStatus {
+  ATIVA = 'ativa',
+  ATINGIDA = 'atingida',
+  EXPIRADA = 'expirada',
+  CANCELADA = 'cancelada',
+}
+
 export interface Goal {
   id?: string; // ID do documento Firestore
   name: string;
@@ -8,7 +15,7 @@ export interface Goal {
   currentValue: number;
   startDate: Date;
   endDate: Date;
-  status: 'ativa' | 'atingida' | 'expirada' | 'cancelada';
+  status: GoalStatus;
   createdAt: Date;
   createdBy: string;
   achievedAt?: Date;
