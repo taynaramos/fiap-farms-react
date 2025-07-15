@@ -4,6 +4,7 @@ import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, 
 import MenuIcon from '@mui/icons-material/Menu';
 import CreateProductPage from './CreateProductPage';
 import GoalsPage from './GoalsPage';
+import NotificationBell from '../components/NotificationBell';
 
 const MENU_ITEMS = [
   { key: 'dashboard-vendas', label: 'Dashboard de Vendas', icon: '📊' },
@@ -22,6 +23,8 @@ export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleDrawerToggle = () => setMenuOpen(!menuOpen);
+
+  const handleNavigateToGoals = () => setSelected('metas');
 
   const drawer = (
     <Box sx={{ width: drawerWidth, bgcolor: '#fff', height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -66,9 +69,10 @@ export default function HomePage() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" fontWeight={700} letterSpacing={1}>
+          <Typography variant="h6" noWrap component="div" fontWeight={700} letterSpacing={1} sx={{ flexGrow: 1 }}>
             FIAP Farms
           </Typography>
+          <NotificationBell onNavigateToGoals={handleNavigateToGoals} />
         </Toolbar>
       </AppBar>
       <Drawer
