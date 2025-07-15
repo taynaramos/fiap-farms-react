@@ -1,9 +1,8 @@
 import { IUserRepository } from '../../domain/repositories/IUserRepository';
 import { User } from '../../domain/entities/User';
-import { db } from '../firebase';
 import { collection, setDoc, getDoc, getDocs, query, where, doc, serverTimestamp } from 'firebase/firestore';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth, db } from 'shared/firebase';
 
 export class UserRepositoryFirebase implements IUserRepository {
   async create(user: User, password: string): Promise<void> {

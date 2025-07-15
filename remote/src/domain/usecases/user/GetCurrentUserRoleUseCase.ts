@@ -1,5 +1,5 @@
+import { auth } from 'shared/firebase';
 import { UserRepositoryFirebase } from '../../../infra/repositories/UserRepositoryFirebase';
-import { auth } from '../../../infra/firebase';
 
 export async function getCurrentUserRole(): Promise<string | null> {
   const user = auth.currentUser;
