@@ -1,5 +1,5 @@
 import { collection, addDoc, getDocs, updateDoc, doc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db } from 'shared/firebase';
 import { Goal } from '../../domain/entities/Goal';
 import { IGoalRepository } from '../../domain/repositories/goal/IGoalRepository';
 
