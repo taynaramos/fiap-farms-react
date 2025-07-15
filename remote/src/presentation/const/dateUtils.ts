@@ -14,3 +14,8 @@ export function parseDateToBrasilia(dateStr: string): Date {
   // Cria a data no horário de Brasília (UTC-3)
   return new Date(Date.UTC(year, month - 1, day, 3, 0, 0));
 }
+
+export function toDateString(date: string | Date): string {
+  if (typeof date === 'string') return date;
+  return date.toISOString().slice(0, 10);
+}

@@ -4,6 +4,8 @@ import SalesDashboardPage from './SalesDashboardPage';
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Box, CssBaseline, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CreateProductPage from './CreateProductPage';
+import GoalsPage from './GoalsPage';
+import NotificationBell from '../components/NotificationBell';
 import Routes from 'shared/routes';
 
 const MENU_ITEMS = [
@@ -23,6 +25,8 @@ export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const handleDrawerToggle = () => setMenuOpen(!menuOpen);
+
+  const handleNavigateToGoals = () => setSelected('metas');
 
   const drawer = (
     <Box sx={{ width: drawerWidth, bgcolor: '#fff', height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -67,9 +71,10 @@ export default function HomePage() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" fontWeight={700} letterSpacing={1}>
+          <Typography variant="h6" noWrap component="div" fontWeight={700} letterSpacing={1} sx={{ flexGrow: 1 }}>
             FIAP Farms
           </Typography>
+          <NotificationBell onNavigateToGoals={handleNavigateToGoals} />
         </Toolbar>
       </AppBar>
       <Drawer
@@ -94,6 +99,7 @@ export default function HomePage() {
         {selected === 'dashboard-vendas' && <SalesDashboardPage />}
         {selected === 'dashboard-producao' && <ProductionDashboardPage />}
         {selected === 'cadastrar-produto' && <CreateProductPage />}
+        {selected === 'metas' && <GoalsPage />}
         {/* Adicione outros conteúdos para as demais páginas aqui */}
       </Box>
     </Box>
