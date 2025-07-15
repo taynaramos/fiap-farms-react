@@ -7,5 +7,6 @@ export default class Routes {
     metas: "metas",
     perfil: "perfil",
     sair: "sair",
+    admin: "admin",
   };
 }

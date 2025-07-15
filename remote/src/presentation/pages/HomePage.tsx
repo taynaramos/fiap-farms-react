@@ -4,34 +4,46 @@ import SalesDashboardPage from './SalesDashboardPage';
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Box, CssBaseline, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CreateProductPage from './CreateProductPage';
+import CreateUserPage from './CreateUserPage';
+import { useAuth } from '../../infra/firebase/AuthContext';
 import GoalsPage from './GoalsPage';
 import NotificationBell from '../components/NotificationBell';
 import Routes from 'shared/routes';
 
-const MENU_ITEMS = [
-  { key: Routes.paths.dashboard_vendas, label: 'Dashboard de Vendas', icon: '📊' },
-  { key: Routes.paths.dashboard_producao, label: 'Dashboard de Produção', icon: '🚜' },
-  { key: Routes.paths.cadastrar_produto, label: 'Cadastrar Produto', icon: '➕' },
-  { key: Routes.paths.controle_estoque, label: 'Controle de Estoque e Vendas', icon: '📦' },
-  { key: Routes.paths.metas, label: 'Metas e Notificações', icon: '🎯' },
-  { key: Routes.paths.perfil, label: 'Perfil', icon: '👤' },
-  { key: Routes.paths.sair, label: 'Sair', icon: '🚪', color: '#f44336' },
-];
-
 const drawerWidth = 260;
 
 export default function HomePage() {
-  const [selected, setSelected] = useState('dashboard-producao');
+  const [selected, setSelected] = useState(Routes.paths.dashboard_producao);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { appUser, loading } = useAuth();
+
+  if (loading) {
+    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}><Typography>Carregando...</Typography></Box>;
+  }
+
+  if (!appUser) {
+    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}><Typography>Usuário não autenticado</Typography></Box>;
+  }
+
+  // Monta o menu dinamicamente conforme o role
+  const menuItems = [
+    { key: Routes.paths.dashboard_vendas, label: 'Dashboard de Vendas', icon: '📊' },
+    { key: Routes.paths.dashboard_producao, label: 'Dashboard de Produção', icon: '🚜' },
+    { key: Routes.paths.cadastrar_produto, label: 'Cadastrar Produto', icon: '➕' },
+    { key: Routes.paths.controle_estoque, label: 'Controle de Estoque e Vendas', icon: '📦' },
+    { key: Routes.paths.metas, label: 'Metas e Notificações', icon: '🎯' },
+    { key: Routes.paths.perfil, label: 'Perfil', icon: '👤' },
+    ...(appUser.role === 'admin' ? [{ key: Routes.paths.admin, label: 'Administração', icon: '🛡️' }] : []),
+    { key: Routes.paths.sair, label: 'Sair', icon: '🚪', color: '#f44336' },
+  ];
 
   const handleDrawerToggle = () => setMenuOpen(!menuOpen);
-
-  const handleNavigateToGoals = () => setSelected('metas');
+  const handleNavigateToGoals = () => setSelected(Routes.paths.metas);
 
   const drawer = (
     <Box sx={{ width: drawerWidth, bgcolor: '#fff', height: '100%', display: 'flex', flexDirection: 'column' }}>
       <List sx={{ flex: 1, bgcolor: '#fff', pt: 2 }}>
-        {MENU_ITEMS.map(item => (
+        {menuItems.map(item => (
           <ListItemButton
             key={item.key}
             selected={selected === item.key}
@@ -96,10 +108,11 @@ export default function HomePage() {
         {drawer}
       </Drawer>
       <Box component="main" sx={{ flex: 1, p: 4, mt: 7 }}>
-        {selected === 'dashboard-vendas' && <SalesDashboardPage />}
-        {selected === 'dashboard-producao' && <ProductionDashboardPage />}
-        {selected === 'cadastrar-produto' && <CreateProductPage />}
-        {selected === 'metas' && <GoalsPage />}
+        {selected === Routes.paths.dashboard_vendas && <SalesDashboardPage />}
+        {selected === Routes.paths.dashboard_producao && <ProductionDashboardPage />}
+        {selected === Routes.paths.cadastrar_produto && <CreateProductPage />}
+        {selected === Routes.paths.admin && <CreateUserPage />}
+        {selected === Routes.paths.metas && <GoalsPage />}
         {/* Adicione outros conteúdos para as demais páginas aqui */}
       </Box>
     </Box>
