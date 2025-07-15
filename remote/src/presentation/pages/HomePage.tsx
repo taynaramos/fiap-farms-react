@@ -3,6 +3,10 @@ import ProductionDashboardPage from './ProductionDashboardPage';
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Box, CssBaseline, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CreateProductPage from './CreateProductPage';
+import CreateUserPage from './CreateUserPage';
+
+// Simulação de usuário autenticado (substituir por contexto real depois)
+const mockUser = { role: 'admin' };
 
 const MENU_ITEMS = [
   { key: 'dashboard-vendas', label: 'Dashboard de Vendas', icon: '📊' },
@@ -11,6 +15,7 @@ const MENU_ITEMS = [
   { key: 'controle-estoque', label: 'Controle de Estoque e Vendas', icon: '📦' },
   { key: 'metas', label: 'Metas e Notificações', icon: '🎯' },
   { key: 'perfil', label: 'Perfil', icon: '👤' },
+  ...(mockUser.role === 'admin' ? [{ key: 'admin', label: 'Administração', icon: '🛡️' }] : []),
   { key: 'sair', label: 'Sair', icon: '🚪', color: '#f44336' },
 ];
 
@@ -91,6 +96,7 @@ export default function HomePage() {
       <Box component="main" sx={{ flex: 1, p: 4, mt: 7 }}>
         {selected === 'dashboard-producao' && <ProductionDashboardPage />}
         {selected === 'cadastrar-produto' && <CreateProductPage />}
+        {selected === 'admin' && <CreateUserPage />}
         {/* Adicione outros conteúdos para as demais páginas aqui */}
       </Box>
     </Box>
