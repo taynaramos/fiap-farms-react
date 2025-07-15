@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import ProductionDashboardPage from './ProductionDashboardPage';
+import SalesDashboardPage from './SalesDashboardPage';
 import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, ListItemIcon, ListItemText, Box, CssBaseline, Divider } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import CreateProductPage from './CreateProductPage';
 import GoalsPage from './GoalsPage';
 import NotificationBell from '../components/NotificationBell';
+import Routes from 'shared/routes';
 
 const MENU_ITEMS = [
-  { key: 'dashboard-vendas', label: 'Dashboard de Vendas', icon: '📊' },
-  { key: 'dashboard-producao', label: 'Dashboard de Produção', icon: '🚜' },
-  { key: 'cadastrar-produto', label: 'Cadastrar Produto', icon: '➕' },
-  { key: 'controle-estoque', label: 'Controle de Estoque e Vendas', icon: '📦' },
-  { key: 'metas', label: 'Metas e Notificações', icon: '🎯' },
-  { key: 'perfil', label: 'Perfil', icon: '👤' },
-  { key: 'sair', label: 'Sair', icon: '🚪', color: '#f44336' },
+  { key: Routes.paths.dashboard_vendas, label: 'Dashboard de Vendas', icon: '📊' },
+  { key: Routes.paths.dashboard_producao, label: 'Dashboard de Produção', icon: '🚜' },
+  { key: Routes.paths.cadastrar_produto, label: 'Cadastrar Produto', icon: '➕' },
+  { key: Routes.paths.controle_estoque, label: 'Controle de Estoque e Vendas', icon: '📦' },
+  { key: Routes.paths.metas, label: 'Metas e Notificações', icon: '🎯' },
+  { key: Routes.paths.perfil, label: 'Perfil', icon: '👤' },
+  { key: Routes.paths.sair, label: 'Sair', icon: '🚪', color: '#f44336' },
 ];
 
 const drawerWidth = 260;
@@ -94,6 +96,7 @@ export default function HomePage() {
         {drawer}
       </Drawer>
       <Box component="main" sx={{ flex: 1, p: 4, mt: 7 }}>
+        {selected === 'dashboard-vendas' && <SalesDashboardPage />}
         {selected === 'dashboard-producao' && <ProductionDashboardPage />}
         {selected === 'cadastrar-produto' && <CreateProductPage />}
         {selected === 'metas' && <GoalsPage />}
