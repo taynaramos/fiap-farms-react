@@ -4,18 +4,16 @@ import { AppBar, Toolbar, IconButton, Typography, Drawer, List, ListItemButton, 
 import MenuIcon from '@mui/icons-material/Menu';
 import CreateProductPage from './CreateProductPage';
 import CreateUserPage from './CreateUserPage';
+import { useAuth } from '../../infra/firebase/AuthContext';
 
-// Simulação de usuário autenticado (substituir por contexto real depois)
-const mockUser = { role: 'admin' };
-
-const MENU_ITEMS = [
+const getMenuItems = (role: string) => [
   { key: 'dashboard-vendas', label: 'Dashboard de Vendas', icon: '📊' },
   { key: 'dashboard-producao', label: 'Dashboard de Produção', icon: '🚜' },
   { key: 'cadastrar-produto', label: 'Cadastrar Produto', icon: '➕' },
   { key: 'controle-estoque', label: 'Controle de Estoque e Vendas', icon: '📦' },
   { key: 'metas', label: 'Metas e Notificações', icon: '🎯' },
   { key: 'perfil', label: 'Perfil', icon: '👤' },
-  ...(mockUser.role === 'admin' ? [{ key: 'admin', label: 'Administração', icon: '🛡️' }] : []),
+  ...(role === 'admin' ? [{ key: 'admin', label: 'Administração', icon: '🛡️' }] : []),
   { key: 'sair', label: 'Sair', icon: '🚪', color: '#f44336' },
 ];
 
@@ -24,6 +22,17 @@ const drawerWidth = 260;
 export default function HomePage() {
   const [selected, setSelected] = useState('dashboard-producao');
   const [menuOpen, setMenuOpen] = useState(false);
+  const { appUser, loading } = useAuth();
+
+  if (loading) {
+    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}><Typography>Carregando...</Typography></Box>;
+  }
+
+  if (!appUser) {
+    return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}><Typography>Usuário não autenticado</Typography></Box>;
+  }
+
+  const MENU_ITEMS = getMenuItems(appUser.role);
 
   const handleDrawerToggle = () => setMenuOpen(!menuOpen);
 

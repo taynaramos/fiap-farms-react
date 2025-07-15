@@ -1,5 +1,6 @@
 import React from 'react';
 import HomePage from './presentation/pages/HomePage';
+import { AuthProvider } from './infra/firebase/AuthContext';
 
 // Estilo global para fonte Roboto
 const globalStyle = document.createElement('style');
@@ -8,8 +9,8 @@ document.head.appendChild(globalStyle);
 
 export default function App({ children }: { children?: React.ReactNode }) {
 	return (
-		<div>
+		<AuthProvider>
 			<HomePage />
-		</div>
+		</AuthProvider>
 	);
 }
