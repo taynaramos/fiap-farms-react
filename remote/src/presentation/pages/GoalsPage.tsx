@@ -52,15 +52,12 @@ export default function GoalsPage() {
     fetchProducts();
   }, []);
 
-  // Notificação simples (alerta visual)
   useEffect(() => {
-    console.log("useEffect")
-    if (notifyOnAchieve) {
+    if (notifyOnAchieve && goals.length > 0) {
       goals.forEach(goal => {
-        console.log("goal.achievedAt", goal.achievedAt)
         if (goal.status === GoalStatus.ATINGIDA && !goal.achievedAt) {
+          console.log("META ATINGIDA - mostrando notificação para:", goal.name);
           setSnackbar({ open: true, message: `Meta atingida: ${goal.name}`, severity: 'success' });
-          // Atualiza achievedAt para não notificar novamente
           updateGoalUseCase.execute({ ...goal, achievedAt: new Date() });
         }
       });

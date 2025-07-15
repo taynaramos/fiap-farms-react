@@ -42,25 +42,26 @@ export default function ProductionBatchList({ filteredBatches, statusLabels, onS
       for (const goal of goals) {
         if (batch.estimatedQuantity >= goal.targetValue) {
           try {
+            const { achievedAt, ...goalWithoutAchievedAt } = goal;
             await goalRepo.update({
-              ...goal,
+              ...goalWithoutAchievedAt,
               currentValue: batch.estimatedQuantity,
               status: GoalStatus.ATINGIDA,
-              achievedAt: new Date(),
+              // achievedAt será preenchido no useEffect da página de metas
             });
-            console.log("meta atiginda com sucesso:", goal);
+            console.log("meta atingida com sucesso:", goal.name);
           } catch (error) {
             console.error("erro ao atualizar meta:", error);
           }
         } else {
           try {
+            const { achievedAt, ...goalWithoutAchievedAt } = goal;
             await goalRepo.update({
-              ...goal,
+              ...goalWithoutAchievedAt,
               currentValue: batch.estimatedQuantity,
               status: GoalStatus.ATIVA,
-              achievedAt: new Date(),
             });
-            console.log("meta atualizada mas não atingida", goal);
+            console.log("meta atualizada mas não atingida:", goal.name);
           } catch (error) {
             console.error("erro ao atualizar meta:", error);
           }
