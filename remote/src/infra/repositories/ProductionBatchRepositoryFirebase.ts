@@ -1,6 +1,6 @@
 import { IProductionBatchRepository } from '../../domain/repositories/production/IProductionBatchRepository';
 import { ProductionBatch } from '../../domain/entities/ProductionBatch';
-import { db, auth } from '../firebase';
+import { db, auth } from 'shared/firebase';
 import { collection, getDocs, doc, updateDoc, serverTimestamp, addDoc } from 'firebase/firestore';
 import { StatusKey } from '../../domain/enums/StatusKey';
 

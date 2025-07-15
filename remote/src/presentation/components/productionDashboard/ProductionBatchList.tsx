@@ -4,6 +4,8 @@ import { StatusKey } from '../../../domain/enums/StatusKey';
 import { ProductionBatchRepositoryFirebase } from '../../../infra/repositories/ProductionBatchRepositoryFirebase';
 import { UpdateProductionBatchStatusUseCase } from '../../../domain/usecases/production/UpdateProductionBatchStatusUseCase';
 import AddBatchButton from './AddBatchButton';
+import { GoalRepositoryFirebase } from '../../../infra/repositories/GoalRepositoryFirebase';
+import { GoalStatus } from '../../../domain/entities/Goal';
 
 interface ProductionBatchListProps {
   filteredBatches: ProductionBatch[];
@@ -32,6 +34,40 @@ export default function ProductionBatchList({ filteredBatches, statusLabels, onS
     const repo = new ProductionBatchRepositoryFirebase();
     const useCase = new UpdateProductionBatchStatusUseCase(repo);
     await useCase.execute(batch.id, nextStatus);
+    // Regra de negócio para metas
+    if (nextStatus === StatusKey.COLHIDO) {
+      const goalRepo = new GoalRepositoryFirebase();
+      const goals = await goalRepo.getActiveGoalsByProduct(batch.productId);
+      
+      for (const goal of goals) {
+        if (batch.estimatedQuantity >= goal.targetValue) {
+          try {
+            const { achievedAt, ...goalWithoutAchievedAt } = goal;
+            await goalRepo.update({
+              ...goalWithoutAchievedAt,
+              currentValue: batch.estimatedQuantity,
+              status: GoalStatus.ATINGIDA,
+              // achievedAt será preenchido no useEffect da página de metas
+            });
+            console.log("meta atingida com sucesso:", goal.name);
+          } catch (error) {
+            console.error("erro ao atualizar meta:", error);
+          }
+        } else {
+          try {
+            const { achievedAt, ...goalWithoutAchievedAt } = goal;
+            await goalRepo.update({
+              ...goalWithoutAchievedAt,
+              currentValue: batch.estimatedQuantity,
+              status: GoalStatus.ATIVA,
+            });
+            console.log("meta atualizada mas não atingida:", goal.name);
+          } catch (error) {
+            console.error("erro ao atualizar meta:", error);
+          }
+        }
+      }
+    }
     if (onStatusChange) onStatusChange();
   };
 
