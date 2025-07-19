@@ -59,13 +59,20 @@ export default function CreateAccountPage() {
     >
       <Container maxWidth="xs">
         <Paper elevation={4} sx={{ padding: 4, borderRadius: 3 }}>
-          <Typography variant="h5" component="h1" align="center" gutterBottom>
+          <Typography
+            variant="h4"
+            component="h1"
+            align="center"
+            gutterBottom
+            sx={{ color: "#1B5E20", fontWeight: "bold" }}
+          >
             Criar Conta
           </Typography>
 
           <Stack spacing={2}>
             <TextField
               label="Email"
+              placeholder="Digite seu email"
               variant="outlined"
               fullWidth
               value={email}
@@ -76,6 +83,7 @@ export default function CreateAccountPage() {
               label="Senha"
               type="password"
               variant="outlined"
+              placeholder="Digite sua senha"
               fullWidth
               value={password}
               onChange={(e) => setPassword(e.target.value)}

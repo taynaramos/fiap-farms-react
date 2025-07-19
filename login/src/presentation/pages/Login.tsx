@@ -70,13 +70,20 @@ export default function LoginPage() {
     >
       <Container maxWidth="xs">
         <Paper elevation={4} sx={{ padding: 4, borderRadius: 3 }}>
-          <Typography variant="h5" component="h1" align="center" gutterBottom>
-            Login
+          <Typography
+            variant="h4"
+            component="h1"
+            align="center"
+            gutterBottom
+            sx={{ color: "#1B5E20", fontWeight: "bold" }}
+          >
+            FIAP Farms
           </Typography>
 
           <Stack spacing={2}>
             <TextField
               label="Email"
+              placeholder="Digite seu email"
               variant="outlined"
               fullWidth
               value={email}
@@ -87,6 +94,7 @@ export default function LoginPage() {
 
             <TextField
               label="Senha"
+              placeholder="Digite sua senha"
               type="password"
               variant="outlined"
               fullWidth
