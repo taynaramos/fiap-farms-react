@@ -35,6 +35,14 @@ docker run --network="host" fiap-farms-mf
   - [http://localhost:4174/](http://localhost:4174/) (remote)
   - [http://localhost:4175/](http://localhost:4175/) (login)
 
+## Rodando com Docker no macOS
+
+1. **Utilizando o docker compose, execute:**
+
+```sh
+docker-compose up
+```
+
 ## Dicas úteis
 
 Para remover todos os diretórios `node_modules` de uma vez:
