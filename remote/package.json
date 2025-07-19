@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --port 4174",
+    "dev": "vite --port 4174 --host 0.0.0.0",
     "build": "tsc && vite build",
     "preview": "npm run build && vite preview --port 4174"
   },
