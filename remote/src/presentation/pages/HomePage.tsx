@@ -6,6 +6,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CreateProductPage from './CreateProductPage';
 import CreateUserPage from './CreateUserPage';
 import { useAuth } from '../../infra/firebase/AuthContext';
+import StockDashboardPage from './StockDashboardPage';
 import GoalsPage from './GoalsPage';
 import NotificationBell from '../components/NotificationBell';
 import Routes from 'shared/routes';
@@ -111,6 +112,7 @@ export default function HomePage() {
         {selected === Routes.paths.dashboard_vendas && <SalesDashboardPage />}
         {selected === Routes.paths.dashboard_producao && <ProductionDashboardPage />}
         {selected === Routes.paths.cadastrar_produto && <CreateProductPage />}
+        {selected === Routes.paths.controle_estoque && <StockDashboardPage />}
         {selected === Routes.paths.admin && <CreateUserPage />}
         {selected === Routes.paths.metas && <GoalsPage />}
         {/* Adicione outros conteúdos para as demais páginas aqui */}
