@@ -10,6 +10,7 @@ import GoalsPage from "./presentation/pages/GoalsPage";
 import Logout from "./presentation/pages/Logout";
 import ProductionDashboardPage from "./presentation/pages/ProductionDashboardPage";
 import SalesDashboardPage from "./presentation/pages/SalesDashboardPage";
+import StockDashboardPage from "./presentation/pages/StockDashboardPage";
 
 const RemoteRoutes = () => {
 
@@ -27,6 +28,10 @@ const RemoteRoutes = () => {
           <Route
             path={Routes.paths.cadastrar_produto}
             element={<CreateProductPage />}
+          />
+          <Route
+            path={Routes.paths.controle_estoque}
+            element={<StockDashboardPage />}
           />
           <Route
             path={Routes.paths.controle_estoque}
