@@ -1,17 +1,18 @@
-import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "shared/firebase";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth } from "shared/firebase";
+import { loginPath, remotePath } from "shared/routes";
 
 import {
+  Alert,
   Box,
-  Container,
-  TextField,
-  Typography,
   Button,
+  Container,
   Paper,
   Stack,
-  Alert,
+  TextField,
+  Typography,
 } from "@mui/material";
 import Routes from "shared/routes";
 
@@ -51,7 +52,7 @@ export default function LoginPage() {
       window.dispatchEvent(
         new CustomEvent("user-logged-in", { detail: userCred })
       );
-      navigate(Routes.paths.home);
+      navigate(remotePath(Routes.paths.dashboard_producao));
     } catch (error) {
       console.error("Erro ao logar:", error);
       setFirebaseError("Erro ao fazer login. Verifique suas credenciais.");
@@ -119,7 +120,7 @@ export default function LoginPage() {
               variant="text"
               color="success"
               fullWidth
-              onClick={() => navigate("/create-account")}
+              onClick={() => navigate(loginPath(Routes.paths.createAccount))}
             >
               Criar conta
             </Button>

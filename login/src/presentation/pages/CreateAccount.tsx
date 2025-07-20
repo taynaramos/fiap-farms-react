@@ -12,7 +12,7 @@ import {
   Stack,
   Alert,
 } from "@mui/material";
-import Routes from "shared/routes";
+import Routes, { loginPath, remotePath } from "shared/routes";
 
 export default function CreateAccountPage() {
   const [email, setEmail] = useState("");
@@ -41,7 +41,7 @@ export default function CreateAccountPage() {
       window.dispatchEvent(
         new CustomEvent("user-logged-in", { detail: newUser })
       );
-      navigate(Routes.paths.home);
+      navigate(remotePath(Routes.paths.dashboard_producao));
     } catch (error) {
       setError("Erro ao criar conta. Tente novamente.");
     }
@@ -104,7 +104,7 @@ export default function CreateAccountPage() {
               variant="text"
               color="success"
               fullWidth
-              onClick={() => navigate("/login")}
+              onClick={() => navigate(loginPath(Routes.paths.login))}
             >
               Voltar ao login
             </Button>

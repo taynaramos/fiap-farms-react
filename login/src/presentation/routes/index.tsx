@@ -1,6 +1,6 @@
 export default class Routes {
     static paths = {
-      login: "/login",
+      login: "/",
       createAccount: "/create-account",
     };
   }

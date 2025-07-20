@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => {
         filename: "remoteEntry.js",
         name: "remote",
         exposes: {
-          "./remote-app": "./src/App.tsx",
+          "./remote-routes": "./src/App.tsx",
         },
         remotes: {},
         shared: {
