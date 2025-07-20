@@ -1,21 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Typography, MenuItem, Select, CircularProgress, Chip } from '@mui/material';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import TrendingDownIcon from '@mui/icons-material/TrendingDown';
-import RemoveIcon from '@mui/icons-material/Remove';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
-import { SalesRecord } from '../../domain/entities/SalesRecord';
-import { SalesRecordRepositoryFirebase } from '../../infra/repositories/SalesRecordRepositoryFirebase';
-import { GetSalesRecordsUseCase } from '../../domain/usecases/sales/GetSalesRecordsUseCase';
+import RemoveIcon from '@mui/icons-material/Remove';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { Box, CircularProgress, MenuItem, Select, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { Product } from '../../domain/entities/Product';
-import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepositoryFirebase';
+import { SalesRecord } from '../../domain/entities/SalesRecord';
 import { GetProductsUseCase } from '../../domain/usecases/product/GetProductsUseCase';
-import IndicatorCard from '../components/salesDashboard/IndicatorCard';
+import { GetSalesRecordsUseCase } from '../../domain/usecases/sales/GetSalesRecordsUseCase';
+import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepositoryFirebase';
+import { SalesRecordRepositoryFirebase } from '../../infra/repositories/SalesRecordRepositoryFirebase';
 import ComparisonCard from '../components/salesDashboard/ComparisonCard';
-import ProductProfitList from '../components/salesDashboard/ProductProfitList';
+import IndicatorCard from '../components/salesDashboard/IndicatorCard';
 import ProductProfitBarChart from '../components/salesDashboard/ProductProfitBarChart';
+import ProductProfitList from '../components/salesDashboard/ProductProfitList';
+import withLayoutAndAuth from './withLayoutAndAuth';
 
 const PERIODS = ['Dia', 'Semana', 'Mês', 'Ano'];
 
@@ -73,7 +74,7 @@ interface ProductProfit {
   category?: string;
 }
 
-export default function SalesDashboardPage() {
+function SalesDashboardPage() {
   const [sales, setSales] = useState<SalesRecord[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -221,3 +222,5 @@ export default function SalesDashboardPage() {
     </Box>
   );
 } 
+
+export default withLayoutAndAuth(SalesDashboardPage)

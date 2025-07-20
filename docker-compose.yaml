@@ -1,0 +1,15 @@
+services:
+  fiap-farms-mf:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fiap-farms-mf
+    ports:
+      - "4173:4173"
+      - "4174:4174"
+      - "4175:4175"
+    environment:
+      - NODE_ENV=development
+    # volumes:
+    #   - .:/app
+    command: pnpm run dev

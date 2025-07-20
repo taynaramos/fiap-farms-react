@@ -2,21 +2,16 @@ import { onAuthStateChanged } from "firebase/auth";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { Navigate, Route, Routes as RouterRoutes } from "react-router-dom";
 import { auth } from "shared/firebase";
-import Routes from "shared/routes";
+import Routes, { loginPath, remotePath } from "shared/routes";
 
-const Remote = lazy(
+const RemoteRoutes = lazy(
   // @ts-ignore
-  async () => import("remote/remote-app")
+  async () => import("remote/remote-routes")
 );
 
-const Login = lazy(
+const LoginRoutes = lazy(
   // @ts-ignore
-  async () => import("login/login")
-);
-
-const CreateAccount = lazy(
-  // @ts-ignore
-  async () => import("login/create-account")
+  async () => import("login/login-routes")
 );
 
 export default function Initial() {
@@ -51,15 +46,14 @@ export default function Initial() {
           path={Routes.paths.root}
           element={
             isAuthenticated ? (
-              <Navigate to={Routes.paths.home} replace />
+              <Navigate to={remotePath(Routes.paths.dashboard_producao)} replace />
             ) : (
-              <Navigate to={Routes.paths.login} replace />
+              <Navigate to={loginPath(Routes.paths.login)} replace />
             )
           }
         />
-        <Route path={Routes.paths.login} element={<Login />} />
-        <Route path={Routes.paths.createAccount} element={<CreateAccount />} />
-        <Route path={Routes.paths.home} element={<Remote />} />
+        <Route path="/login/*" element={<LoginRoutes />} />
+        <Route path="/app/*" element={<RemoteRoutes />} />
       </RouterRoutes>
     </Suspense>
   );
