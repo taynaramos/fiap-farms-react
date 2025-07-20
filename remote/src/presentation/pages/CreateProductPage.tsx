@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
-import {
-  Box, Button, TextField, Typography, MenuItem, Switch, FormControlLabel, Paper, InputAdornment, Snackbar, Alert
-} from '@mui/material';
-import { Product } from '../../domain/entities/Product';
-import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepositoryFirebase';
-import { CreateProductUseCase } from '../../domain/usecases/product/CreateProductUseCase';
 import CategoryIcon from '@mui/icons-material/Category';
 import StraightenIcon from '@mui/icons-material/Straighten';
+import {
+  Alert,
+  Box, Button,
+  FormControlLabel,
+  InputAdornment,
+  MenuItem,
+  Paper,
+  Snackbar,
+  Switch,
+  TextField, Typography
+} from '@mui/material';
+import React, { useState } from 'react';
+import { Product } from '../../domain/entities/Product';
+import { CreateProductUseCase } from '../../domain/usecases/product/CreateProductUseCase';
+import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepositoryFirebase';
 import { UNITS } from '../const/units';
+import withLayoutAndAuth from './withLayoutAndAuth';
 
 const CATEGORIES = [
   { value: 'hortalicas', label: 'Hortaliças' },
@@ -18,7 +27,7 @@ const CATEGORIES = [
   { value: 'outros', label: 'Outros' },
 ];
 
-export default function CreateProductPage() {
+ function CreateProductPage() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState(CATEGORIES[0].value);
@@ -169,3 +178,5 @@ export default function CreateProductPage() {
     </Box>
   );
 } 
+
+export default withLayoutAndAuth(CreateProductPage)

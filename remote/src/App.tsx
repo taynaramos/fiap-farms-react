@@ -1,16 +1,50 @@
-import React from 'react';
-import HomePage from './presentation/pages/HomePage';
-import { AuthProvider } from './infra/firebase/AuthContext';
+import {
+	Route,
+	Routes as RouterRoutes
+} from "react-router-dom";
+import Routes from "shared/routes";
+import { AuthProvider } from "./infra/firebase/AuthContext";
+import CreateProductPage from "./presentation/pages/CreateProductPage";
+import CreateUserPage from "./presentation/pages/CreateUserPage";
+import GoalsPage from "./presentation/pages/GoalsPage";
+import ProductionDashboardPage from "./presentation/pages/ProductionDashboardPage";
+import SalesDashboardPage from "./presentation/pages/SalesDashboardPage";
+
+const RemoteRoutes = () => {
+
+  return (
+      <AuthProvider>
+        <RouterRoutes>
+          <Route
+            path={Routes.paths.dashboard_vendas}
+            element={<SalesDashboardPage />}
+          />
+          <Route
+            path={Routes.paths.dashboard_producao}
+            element={<ProductionDashboardPage />}
+          />
+          <Route
+            path={Routes.paths.cadastrar_produto}
+            element={<CreateProductPage />}
+          />
+          <Route
+            path={Routes.paths.controle_estoque}
+            element={<div>controle_estoque</div>}
+          />
+          <Route path={Routes.paths.admin} element={<CreateUserPage />} />
+          <Route path={Routes.paths.metas} element={<GoalsPage />} />
+          <Route path={Routes.paths.perfil} element={<div>perfil</div>} />
+          <Route path={Routes.paths.sair} element={<div>sair</div>} />
+        </RouterRoutes>
+      </AuthProvider>
+  );
+};
 
 // Estilo global para fonte Roboto
-const globalStyle = document.createElement('style');
+const globalStyle = document.createElement("style");
 globalStyle.innerHTML = `body, * { font-family: 'Roboto', Arial, sans-serif !important; }`;
 document.head.appendChild(globalStyle);
 
-export default function App({ children }: { children?: React.ReactNode }) {
-	return (
-		<AuthProvider>
-			<HomePage />
-		</AuthProvider>
-	);
+export default function App() {
+  return <RemoteRoutes />;
 }

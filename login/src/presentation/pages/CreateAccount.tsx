@@ -12,7 +12,7 @@ import {
   Stack,
   Alert,
 } from "@mui/material";
-import Routes from "shared/routes";
+import Routes, { loginPath, remotePath } from "shared/routes";
 
 export default function CreateAccountPage() {
   const [email, setEmail] = useState("");
@@ -41,7 +41,7 @@ export default function CreateAccountPage() {
       window.dispatchEvent(
         new CustomEvent("user-logged-in", { detail: newUser })
       );
-      navigate(Routes.paths.home);
+      navigate(remotePath(Routes.paths.dashboard_producao));
     } catch (error) {
       setError("Erro ao criar conta. Tente novamente.");
     }
@@ -59,13 +59,20 @@ export default function CreateAccountPage() {
     >
       <Container maxWidth="xs">
         <Paper elevation={4} sx={{ padding: 4, borderRadius: 3 }}>
-          <Typography variant="h5" component="h1" align="center" gutterBottom>
+          <Typography
+            variant="h4"
+            component="h1"
+            align="center"
+            gutterBottom
+            sx={{ color: "#1B5E20", fontWeight: "bold" }}
+          >
             Criar Conta
           </Typography>
 
           <Stack spacing={2}>
             <TextField
               label="Email"
+              placeholder="Digite seu email"
               variant="outlined"
               fullWidth
               value={email}
@@ -76,6 +83,7 @@ export default function CreateAccountPage() {
               label="Senha"
               type="password"
               variant="outlined"
+              placeholder="Digite sua senha"
               fullWidth
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -96,7 +104,7 @@ export default function CreateAccountPage() {
               variant="text"
               color="success"
               fullWidth
-              onClick={() => navigate("/login")}
+              onClick={() => navigate(loginPath(Routes.paths.login))}
             >
               Voltar ao login
             </Button>
