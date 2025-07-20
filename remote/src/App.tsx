@@ -7,6 +7,7 @@ import { AuthProvider } from "./infra/firebase/AuthContext";
 import CreateProductPage from "./presentation/pages/CreateProductPage";
 import CreateUserPage from "./presentation/pages/CreateUserPage";
 import GoalsPage from "./presentation/pages/GoalsPage";
+import Logout from "./presentation/pages/Logout";
 import ProductionDashboardPage from "./presentation/pages/ProductionDashboardPage";
 import SalesDashboardPage from "./presentation/pages/SalesDashboardPage";
 
@@ -34,7 +35,7 @@ const RemoteRoutes = () => {
           <Route path={Routes.paths.admin} element={<CreateUserPage />} />
           <Route path={Routes.paths.metas} element={<GoalsPage />} />
           <Route path={Routes.paths.perfil} element={<div>perfil</div>} />
-          <Route path={Routes.paths.sair} element={<div>sair</div>} />
+          <Route path={Routes.paths.sair} element={<Logout />} />
         </RouterRoutes>
       </AuthProvider>
   );
