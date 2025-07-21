@@ -8,12 +8,17 @@ import SalesRegisterCard from '../components/stockDashboard/SalesRegisterCard';
 import { SalesRecord } from '../../domain/entities/SalesRecord';
 import { GetSalesRecordsUseCase } from '../../domain/usecases/sales/GetSalesRecordsUseCase';
 import { SalesRecordRepositoryFirebase } from '../../infra/repositories/SalesRecordRepositoryFirebase';
+import { Inventory } from '../../domain/entities/Inventory';
+import { GetInventoryUseCase } from '../../domain/usecases/inventory/GetInventoryUseCase';
+import { InventoryRepositoryFirebase } from '../../infra/repositories/InventoryRepositoryFirebase';
 
 function StockDashboardPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [tab, setTab] = useState(0);
   const [sales, setSales] = useState<SalesRecord[]>([]);
   const [loadingSales, setLoadingSales] = useState(true);
+  const [inventory, setInventory] = useState<Inventory[]>([]);
+  const [loadingInventory, setLoadingInventory] = useState(true);
 
   useEffect(() => {
     async function fetchSales() {
@@ -26,6 +31,20 @@ function StockDashboardPage() {
     }
     if (!showCreate && tab === 1) {
       fetchSales();
+    }
+  }, [showCreate, tab]);
+
+  useEffect(() => {
+    async function fetchInventory() {
+      setLoadingInventory(true);
+      const repo = new InventoryRepositoryFirebase();
+      const useCase = new GetInventoryUseCase(repo);
+      const inventoryList = await useCase.execute();
+      setInventory(inventoryList);
+      setLoadingInventory(false);
+    }
+    if (!showCreate && tab === 0) {
+      fetchInventory();
     }
   }, [showCreate, tab]);
 
@@ -63,6 +82,10 @@ function StockDashboardPage() {
       </Container>
       {showCreate ? (
         <CreateStockPage />
+      ) : loadingInventory ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+          <span>Carregando estoque...</span>
+        </Box>
       ) : (
         <Box
           sx={{
@@ -75,6 +98,13 @@ function StockDashboardPage() {
             mt: 2,
           }}
         >
+          {inventory.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">Nenhum item de estoque cadastrado.</Typography>
+          ) : (
+            inventory.map((item, index) => (
+              <StockProductCard key={item.id} item={item} index={index} />
+            ))
+          )}
         </Box>
       )}
     </>

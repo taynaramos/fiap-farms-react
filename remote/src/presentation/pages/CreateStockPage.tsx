@@ -6,8 +6,8 @@ import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepos
 import { Product } from '../../domain/entities/Product';
 import { STATUS_LABELS } from '../const/statusLabels';
 import { getTodayISO, getFutureISO } from '../const/dateUtils';
-import { CreateProductionBatchUseCase } from '../../domain/usecases/production/CreateProductionBatchUseCase';
-import { ProductionBatchRepositoryFirebase } from '../../infra/repositories/ProductionBatchRepositoryFirebase';
+import { CreateInventoryUseCase } from '../../domain/usecases/inventory/CreateInventoryUseCase';
+import { InventoryRepositoryFirebase } from '../../infra/repositories/InventoryRepositoryFirebase';
 import { auth } from 'shared/firebase';
 
 export default function CreateStockPage() {
@@ -25,13 +25,13 @@ export default function CreateStockPage() {
         useCase.execute().then(setProducts).finally(() => setLoadingProducts(false));
     }, []);
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (!product) return;
         const selectedProduct = products.find(p => p.id === product);
         if (!selectedProduct) return;
-        const repo = new ProductionBatchRepositoryFirebase();
-        const useCase = new CreateProductionBatchUseCase(repo);
+        const repo = new InventoryRepositoryFirebase();
+        const useCase = new CreateInventoryUseCase(repo);
         const user = auth.currentUser;
         if (!user) {
             setSnackbar({ open: true, message: 'Usuário não autenticado', severity: 'error' });
@@ -41,13 +41,19 @@ export default function CreateStockPage() {
             await useCase.execute({
                 productId: selectedProduct.id,
                 productName: selectedProduct.name,
-                status,
-                estimatedQuantity: Number(estimatedQuantity),
-                notes,
+                productionBatchId: null,
+                availableQuantity: Number(estimatedQuantity),
+                soldQuantity: 0,
+                unitOfMeasure: selectedProduct.unitOfMeasure,
+                estimatedCostPerUnit: selectedProduct.estimatedCostPerUnit,
+                lastUpdated: new Date(),
+                createdBy: user.uid
             });
-            setSnackbar({ open: true, message: 'Lote criado com sucesso!', severity: 'success' });
+            setSnackbar({ open: true, message: 'Estoque cadastrado com sucesso!', severity: 'success' });
+            setProduct('');
+            setEstimatedQuantity('');
         } catch (err: any) {
-            setSnackbar({ open: true, message: err?.message || 'Erro ao criar lote', severity: 'error' });
+            setSnackbar({ open: true, message: err?.message || 'Erro ao cadastrar estoque', severity: 'error' });
         }
     };
 
@@ -63,7 +69,7 @@ export default function CreateStockPage() {
                         labelId="product-label"
                         value={product}
                         label="Produto *"
-                        onChange={e => setProduct(e.target.value)}
+                        onChange={(e: React.ChangeEvent<{ value: unknown }>) => setProduct(e.target.value as string)}
                         required
                         disabled={loadingProducts}
                     >
@@ -81,6 +87,7 @@ export default function CreateStockPage() {
                     fullWidth
                     margin="normal"
                     required
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEstimatedQuantity(e.target.value)}
                 />
                 <Button
                     type="submit"
