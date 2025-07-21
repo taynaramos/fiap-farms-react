@@ -1,95 +1,35 @@
-import React from 'react';
-import { ProductionBatch } from '../../../domain/entities/ProductionBatch';
-import { StatusKey } from '../../../domain/enums/StatusKey';
-import { ProductionBatchRepositoryFirebase } from '../../../infra/repositories/ProductionBatchRepositoryFirebase';
-import { UpdateProductionBatchStatusUseCase } from '../../../domain/usecases/production/UpdateProductionBatchStatusUseCase';
-import { GoalRepositoryFirebase } from '../../../infra/repositories/GoalRepositoryFirebase';
-import { GoalStatus } from '../../../domain/entities/Goal';
+import { Card, CardContent, Box, Typography, Avatar } from "@mui/material";
 
-interface ProductionBatchListProps {
-    filteredBatches: ProductionBatch[];
-    statusLabels: { key: StatusKey; label: string; color: string; icon: string }[];
-    onStatusChange?: () => void;
-    onAddBatch?: () => void;
+export default function StockProductCard({ item, index }: {
+    item: {
+        productName: string;
+        estimatedQuantity: number;
+        actualQuantity: number;
+        estimatedCostPerUnit: number;
+    }, index: number
+}) {
+    const disponivel = item.estimatedQuantity - (item.actualQuantity || 0);
+    const vendido = item.actualQuantity || 0;
+    const precoPorKg = item.estimatedCostPerUnit;
+    const totalVendido = vendido * precoPorKg;
+
+    return (
+        <Card sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, borderRadius: 3, maxWidth: 500, width: '100%' }}>
+            <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                <Avatar sx={{ bgcolor: 'success.main', width: 32, height: 32, fontSize: 14, fontWeight: 'bold' }}>
+                    {index + 1}
+                </Avatar>
+                <Box>
+                    <Typography variant="subtitle1" fontWeight={600}>{item.productName}</Typography>
+                    <Typography variant="body2" color="success.main">Disponível: {disponivel.toFixed(1)} kg</Typography>
+                    <Typography variant="body2" color="success.main">Vendido: {vendido.toFixed(1)} kg</Typography>
+                </Box>
+            </Box>
+            <Box sx={{ textAlign: 'right' }}>
+                <Typography variant="body2" color="success.main" fontWeight={600}>R$ {precoPorKg.toFixed(2)}</Typography>
+                <Typography variant="caption" color="text.secondary">por kg</Typography>
+                <Typography variant="body2" color="success.main" fontWeight={500} mt={1}>Total vendido: R$ {totalVendido.toFixed(2)}</Typography>
+            </Box>
+        </Card>
+    );
 }
-
-function getNextStatus(current: StatusKey): StatusKey | null {
-    switch (current) {
-        case StatusKey.PLANEJADO:
-            return StatusKey.AGUARDANDO;
-        case StatusKey.AGUARDANDO:
-            return StatusKey.EM_PRODUCAO;
-        case StatusKey.EM_PRODUCAO:
-            return StatusKey.COLHIDO;
-        default:
-            return null;
-    }
-}
-
-return (
-    <div style={{ maxWidth: 600, margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '24px 0 12px 0' }}>
-            <h3 style={{ margin: 0, fontWeight: 700 }}>Lotes de Produção</h3>
-        </div>
-        {filteredBatches.map(batch => {
-            const nextStatus = getNextStatus(batch.status);
-            const nextStatusLabel = nextStatus ? statusLabels.find(s => s.key === nextStatus) : undefined;
-            return (
-                <div key={batch.id} style={{
-                    background: '#faf7fa',
-                    borderRadius: 12,
-                    boxShadow: '0 2px 8px #0001',
-                    padding: 18,
-                    marginBottom: 16,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 8,
-                }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <div style={{ fontWeight: 600, fontSize: 18 }}>{batch.productName}</div>
-                        <span style={{
-                            background: 'var(--grey-light)',
-                            color: `var(--status-${batch.status.toLowerCase()})`,
-                            borderRadius: 8,
-                            padding: '4px 14px',
-                            fontWeight: 600,
-                            fontSize: 14,
-                            marginLeft: 8,
-                        }}>
-                            {statusLabels.find(s => s.key === batch.status)?.label || batch.status}
-                        </span>
-                    </div>
-                    <div style={{ fontSize: 13, color: '#888' }}>
-                        Início: {batch.startDate?.toDate?.().toLocaleDateString?.() || '-'} &nbsp;|
-                        Colheita: {batch.estimatedEndDate?.toDate?.().toLocaleDateString?.() || '-'}
-                    </div>
-                    <div style={{ fontSize: 13, color: '#888' }}>
-                        Estimado: {batch.estimatedQuantity} kg
-                    </div>
-                    {nextStatus && (
-                        <button
-                            onClick={() => handleAdvanceStatus(batch)}
-                            style={{
-                                marginTop: 8,
-                                alignSelf: 'flex-end',
-                                background: nextStatusLabel?.color || '#4caf50',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: 8,
-                                padding: '6px 18px',
-                                fontWeight: 600,
-                                fontSize: 14,
-                                cursor: 'pointer',
-                                boxShadow: '0 2px 8px #0001',
-                                transition: 'all 0.2s',
-                            }}
-                        >
-                            Marcar como {nextStatusLabel?.label}
-                        </button>
-                    )}
-                </div>
-            );
-        })}
-    </div>
-);
-} 
