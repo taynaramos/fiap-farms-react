@@ -28,6 +28,10 @@ export default function CreateSalePage() {
     const [stockError, setStockError] = useState<string | null>(null);
     const [salePricePerUnit, setSalePricePerUnit] = useState('');
 
+    const availableStockCalc = product
+        ? inventory.filter(i => i.productId === product).reduce((sum, i) => sum + i.availableQuantity, 0)
+        : null;
+
     useEffect(() => {
         const repo = new ProductRepositoryFirebase();
         const useCase = new GetProductsUseCase(repo);
@@ -51,18 +55,20 @@ export default function CreateSalePage() {
         fetchInventory();
     }, [product]);
 
+    
+
     useEffect(() => {
         if (!quantitySold || !product) {
             setStockError(null);
             return;
         }
         const qSold = Number(quantitySold);
-        if (availableStock !== null && qSold > availableStock) {
+        if (availableStockCalc !== null && qSold > availableStockCalc) {
             setStockError('Quantidade indisponível em estoque.');
         } else {
             setStockError(null);
         }
-    }, [quantitySold, availableStock, product]);
+    }, [quantitySold, availableStockCalc, product]);
 
 
     useEffect(() => {
@@ -78,7 +84,7 @@ export default function CreateSalePage() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (availableStock === null || Number(quantitySold) > availableStock) {
+        if (availableStockCalc === null || Number(quantitySold) > availableStockCalc) {
             setStockError('Quantidade indisponível em estoque.');
             return;
         }
@@ -179,7 +185,7 @@ export default function CreateSalePage() {
                     margin="normal"
                     required
                     error={!!stockError}
-                    helperText={stockError ? <span style={{ color: 'red' }}>{stockError}</span> : (availableStock !== null && product ? <span style={{ color: 'green' }}>Disponível: {availableStock} {products.find(p => p.id === product)?.unitOfMeasure || ''}</span> : '')}
+                    helperText={stockError ? <span style={{ color: 'red' }}>{stockError}</span> : (availableStockCalc !== null && product ? <span style={{ color: 'green' }}>Disponível: {availableStockCalc} {products.find(p => p.id === product)?.unitOfMeasure || ''}</span> : '')}
                 />
                 <Box mb={2} mt={1}>
                     <Typography variant="body2" color="text.secondary" fontWeight={600}>
