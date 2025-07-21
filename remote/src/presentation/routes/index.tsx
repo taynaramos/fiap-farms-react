@@ -5,7 +5,6 @@ export default class Routes {
     cadastrar_produto: "/cadastrar-produto",
     controle_estoque: "/controle-estoque",
     metas: "/metas",
-    perfil: "/perfil",
     sair: "/sair",
     admin: "/admin",
   };

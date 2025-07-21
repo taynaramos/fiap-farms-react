@@ -1,14 +1,14 @@
+import { Alert, Box, Button, CircularProgress, FormControl, InputLabel, MenuItem, Paper, Select, Snackbar, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, MenuItem, Box, Typography, Paper, Select, InputLabel, FormControl, CircularProgress, Snackbar, Alert } from '@mui/material';
+import { auth } from 'shared/firebase';
+import { Product } from '../../domain/entities/Product';
 import { StatusKey } from '../../domain/enums/StatusKey';
 import { GetProductsUseCase } from '../../domain/usecases/product/GetProductsUseCase';
-import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepositoryFirebase';
-import { Product } from '../../domain/entities/Product';
-import { STATUS_LABELS } from '../const/statusLabels';
-import { getTodayISO, getFutureISO } from '../const/dateUtils';
 import { CreateProductionBatchUseCase } from '../../domain/usecases/production/CreateProductionBatchUseCase';
 import { ProductionBatchRepositoryFirebase } from '../../infra/repositories/ProductionBatchRepositoryFirebase';
-import { auth } from 'shared/firebase';
+import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepositoryFirebase';
+import { getFutureISO, getTodayISO } from '../const/dateUtils';
+import { STATUS_LABELS } from '../const/statusLabels';
 
 export default function CreateProductionBatchPage() {
   const [product, setProduct] = useState('');
@@ -49,6 +49,7 @@ export default function CreateProductionBatchPage() {
         estimatedQuantity: Number(estimatedQuantity),
         notes,
       });
+      window.location.reload();
       setSnackbar({ open: true, message: 'Lote criado com sucesso!', severity: 'success' });
     } catch (err: any) {
       setSnackbar({ open: true, message: err?.message || 'Erro ao criar lote', severity: 'error' });

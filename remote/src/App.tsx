@@ -35,7 +35,6 @@ const RemoteRoutes = () => {
           />
           <Route path={Routes.paths.admin} element={<CreateUserPage />} />
           <Route path={Routes.paths.metas} element={<GoalsPage />} />
-          <Route path={Routes.paths.perfil} element={<div>perfil</div>} />
           <Route path={Routes.paths.sair} element={<Logout />} />
         </RouterRoutes>
       </AuthProvider>
