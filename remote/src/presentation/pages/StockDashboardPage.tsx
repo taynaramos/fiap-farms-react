@@ -1,47 +1,33 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Button, Container, Typography, Tabs, Tab } from '@mui/material';
 import CreateStockPage from './CreateStockPage';
 import CreateSalePage from './CreateSalePage';
 import withLayoutAndAuth from './withLayoutAndAuth';
 import StockProductCard from '../components/stockDashboard/StockProductCard';
 import SalesRegisterCard from '../components/stockDashboard/SalesRegisterCard';
+import { SalesRecord } from '../../domain/entities/SalesRecord';
+import { GetSalesRecordsUseCase } from '../../domain/usecases/sales/GetSalesRecordsUseCase';
+import { SalesRecordRepositoryFirebase } from '../../infra/repositories/SalesRecordRepositoryFirebase';
 
 function StockDashboardPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [tab, setTab] = useState(0);
+  const [sales, setSales] = useState<SalesRecord[]>([]);
+  const [loadingSales, setLoadingSales] = useState(true);
 
-  const stockProducts = [
-    {
-      productName: "Tomate Italiano",
-      estimatedQuantity: 150,
-      actualQuantity: 120,
-      estimatedCostPerUnit: 1.00,
-    },
-    {
-      productName: "Alface Crespa",
-      estimatedQuantity: 100,
-      actualQuantity: 90,
-      estimatedCostPerUnit: 0.80,
-    },
-    {
-      productName: "Alface Crespa",
-      estimatedQuantity: 100,
-      actualQuantity: 90,
-      estimatedCostPerUnit: 0.80,
-    },
-    {
-      productName: "Alface Crespa",
-      estimatedQuantity: 100,
-      actualQuantity: 90,
-      estimatedCostPerUnit: 0.80,
-    },
-    {
-      productName: "Alface Crespa",
-      estimatedQuantity: 100,
-      actualQuantity: 90,
-      estimatedCostPerUnit: 0.80,
-    },
-  ];
+  useEffect(() => {
+    async function fetchSales() {
+      setLoadingSales(true);
+      const repo = new SalesRecordRepositoryFirebase();
+      const useCase = new GetSalesRecordsUseCase(repo);
+      const salesList = await useCase.execute();
+      setSales(salesList);
+      setLoadingSales(false);
+    }
+    if (!showCreate && tab === 1) {
+      fetchSales();
+    }
+  }, [showCreate, tab]);
 
   const renderStockTab = () => (
     <>
@@ -89,9 +75,6 @@ function StockDashboardPage() {
             mt: 2,
           }}
         >
-          {stockProducts.map((item, index) => (
-            <StockProductCard key={index} item={item} index={index} />
-          ))}
         </Box>
       )}
     </>
@@ -131,6 +114,10 @@ function StockDashboardPage() {
       </Container>
       {showCreate ? (
         <CreateSalePage />
+      ) : loadingSales ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+          <span>Carregando vendas...</span>
+        </Box>
       ) : (
         <Box
           sx={{
@@ -143,9 +130,13 @@ function StockDashboardPage() {
             mt: 2,
           }}
         >
-          {stockProducts.map((item, index) => (
-            <SalesRegisterCard key={index} item={item} index={index} />
-          ))}
+          {sales.length === 0 ? (
+            <Typography variant="body2" color="text.secondary">Nenhuma venda registrada.</Typography>
+          ) : (
+            sales.map((sale, index) => (
+              <SalesRegisterCard key={sale.id} sale={sale} index={index} />
+            ))
+          )}
         </Box>
       )}
     </>
@@ -169,7 +160,7 @@ function StockDashboardPage() {
       >
         <Tabs
           value={tab}
-          onChange={(_, v) => { setShowCreate(false); setTab(v); }}
+          onChange={(_event: React.SyntheticEvent, v: number) => { setShowCreate(false); setTab(v); }}
           TabIndicatorProps={{ style: { background: '#fff', height: 4, borderRadius: 2 } }}
         >
           <Tab
