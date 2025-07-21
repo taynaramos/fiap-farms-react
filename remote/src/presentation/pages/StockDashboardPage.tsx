@@ -150,14 +150,16 @@ function StockDashboardPage() {
     <Box sx={{ fontFamily: 'Roboto, Arial, sans-serif', m: 0, p: 0 }}>
       <Box
         sx={{
-          bgcolor: '#43a047', // verde igual ao header
+          bgcolor: '#4caf50', // verde igual ao header
           borderRadius: 0,
-          px: 2,
+          px: 0,
           py: 0,
-          m: 0,
-          position: 'sticky',
+          mt: 8,
+          ml: -4,
+          width: '100%',
+          position: 'fixed',
           top: 0,
-          zIndex: 10,
+          zIndex: 20,
         }}
       >
         <Tabs
@@ -173,7 +175,7 @@ function StockDashboardPage() {
               mx: 2,
               '&.Mui-selected': {
                 color: '#fff',
-                textShadow: '0 1px 8px #388e3c',
+                textShadow: '0 1px 8px #4caf50',
               },
             }}
           />
@@ -185,7 +187,7 @@ function StockDashboardPage() {
               mx: 2,
               '&.Mui-selected': {
                 color: '#fff',
-                textShadow: '0 1px 8px #388e3c',
+                textShadow: '0 1px 8px #4caf50',
               },
             }}
           />
