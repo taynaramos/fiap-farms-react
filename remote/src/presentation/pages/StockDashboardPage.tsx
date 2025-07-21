@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
-import { STATUS_LABELS } from '../const/statusLabels';
-import { Box, Button, Card, CardContent, Chip, Container, Grid, Typography } from '@mui/material';
+import { useState } from 'react';
+import { Box, Button, Container, Typography } from '@mui/material';
 import CreateStockPage from './CreateStockPage';
 import CreateSalePage from './CreateSalePage';
+import withLayoutAndAuth from './withLayoutAndAuth';
 import StockProductCard from '../components/stockDashboard/ProductsList';
 
-export default function StockDashboardPage() {
+function StockDashboardPage() {
   const [showCreate, setShowCreate] = useState(false);
 
+  // Dados mockados para teste (substitua pelos dados reais depois)
   const stockProducts = [
     {
       productName: "Tomate Italiano",
@@ -24,27 +25,55 @@ export default function StockDashboardPage() {
   ];
 
   return (
-    <div style={{ fontFamily: 'Roboto, Arial, sans-serif' }}>
+    <Box sx={{ fontFamily: 'Roboto, Arial, sans-serif', px: 3, py: 4 }}>
       {showCreate ? (
-        <div>
-          <CreateSalePage />
-          <CreateStockPage />
-        </div>
-      ) : (
-        <div>
-          <Container sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '24px 0 12px 0' }}>
-            <h1>Adicionar ao estoque</h1>
-            <Button variant="contained" color="primary">
+        <>
+          <Container
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              mb: 3,
+            }}
+          >
+            <Typography variant="h5" fontWeight={600}>
+              Estoque Atual
+            </Typography>
+            <Button variant="contained" color="primary" onClick={() => setShowCreate(true)}>
               Adicionar ao estoque
             </Button>
           </Container>
+          <CreateStockPage />
+          {/* <CreateSalePage /> */}
+          {/* <CreateStockPage /> */}
+        </>
+      ) : (
+        <>
+          <Container
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              mb: 3,
+            }}
+          >
+            <Typography variant="h5" fontWeight={600}>
+              Estoque Atual
+            </Typography>
+            <Button variant="contained" color="primary" onClick={() => setShowCreate(true)}>
+              Adicionar ao estoque
+            </Button>
+          </Container>
+
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {stockProducts.map((item, index) => (
               <StockProductCard key={index} item={item} index={index} />
             ))}
           </Box>
-        </div>
+        </>
       )}
-    </div>
+    </Box>
   );
-} 
+}
+
+export default withLayoutAndAuth(StockDashboardPage);
