@@ -106,16 +106,42 @@ function StockDashboardPage() {
         }}
       >
         <Typography variant="h5" fontWeight={600}>
-          Vendas
+          Vendas realizadas
         </Typography>
-        <Button variant="contained" color="primary" onClick={() => setShowCreate(true)}>
-          Registrar venda
-        </Button>
+        {showCreate ? (
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => setShowCreate(false)}
+          >
+            Voltar
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setShowCreate(true)}
+          >
+            Registrar venda
+          </Button>
+        )}
       </Container>
       {showCreate ? (
         <CreateSalePage />
       ) : (
-        <Typography variant="body1">Nenhuma venda registrada.</Typography>
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 2,
+            mt: 2,
+          }}
+        >
+          <Typography variant="body1">Nenhuma venda registrada.</Typography>
+        </Box>
       )}
     </>
   );
