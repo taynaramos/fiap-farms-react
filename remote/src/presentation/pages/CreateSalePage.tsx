@@ -7,6 +7,10 @@ import { CreateSalesRecordUseCase } from '../../domain/usecases/sales/CreateSale
 import { SalesRecord } from '../../domain/entities/SalesRecord';
 import { SalesRecordRepositoryFirebase } from '../../infra/repositories/SalesRecordRepositoryFirebase';
 import { auth } from 'shared/firebase';
+import { GetInventoryUseCase } from '../../domain/usecases/inventory/GetInventoryUseCase';
+import { InventoryRepositoryFirebase } from '../../infra/repositories/InventoryRepositoryFirebase';
+import { Inventory } from '../../domain/entities/Inventory';
+import { UpdateInventoryQuantityUseCase } from '../../domain/usecases/inventory/UpdateInventoryQuantityUseCase';
 
 export default function CreateSalePage() {
     const [product, setProduct] = useState('');
@@ -18,6 +22,10 @@ export default function CreateSalePage() {
     const [loadingProducts, setLoadingProducts] = useState(true);
     const [loading, setLoading] = useState(false);
     const [snackbar, setSnackbar] = useState<{ open: boolean; message: string; severity: 'success' | 'error' }>({ open: false, message: '', severity: 'success' });
+    const [inventory, setInventory] = useState<Inventory[]>([]);
+    const [availableStock, setAvailableStock] = useState<number | null>(null);
+    const [stockError, setStockError] = useState<string | null>(null);
+    const [salePricePerUnit, setSalePricePerUnit] = useState('');
 
     useEffect(() => {
         const repo = new ProductRepositoryFirebase();
@@ -25,17 +33,67 @@ export default function CreateSalePage() {
         useCase.execute().then(setProducts).finally(() => setLoadingProducts(false));
     }, []);
 
+    useEffect(() => {
+        async function fetchInventory() {
+            if (!product) {
+                setAvailableStock(null);
+                setInventory([]);
+                return;
+            }
+            const repo = new InventoryRepositoryFirebase();
+            const useCase = new GetInventoryUseCase(repo);
+            const allInventory = await useCase.execute();
+            const productInventory = allInventory.find(i => i.productId === product);
+            setInventory(allInventory);
+            setAvailableStock(productInventory ? productInventory.availableQuantity : 0);
+        }
+        fetchInventory();
+    }, [product]);
+
+    useEffect(() => {
+        if (!quantitySold || !product) {
+            setStockError(null);
+            return;
+        }
+        const qSold = Number(quantitySold);
+        if (availableStock !== null && qSold > availableStock) {
+            setStockError('Quantidade indisponível em estoque.');
+        } else {
+            setStockError(null);
+        }
+    }, [quantitySold, availableStock, product]);
+
+
+    useEffect(() => {
+        if (!product) {
+            setEstimatedCostAtSale('');
+            return;
+        }
+        const selectedProduct = products.find(p => p.id === product);
+        if (selectedProduct) {
+            setEstimatedCostAtSale(String(selectedProduct.estimatedCostPerUnit));
+        }
+    }, [product, products]);
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (availableStock === null || Number(quantitySold) > availableStock) {
+            setStockError('Quantidade indisponível em estoque.');
+            return;
+        }
+        if (!salePricePerUnit || Number(salePricePerUnit) <= 0) {
+            setSnackbar({ open: true, message: 'Informe um preço de venda válido.', severity: 'error' });
+            return;
+        }
         setLoading(true);
         try {
             const selectedProduct = products.find(p => p.id === product);
             if (!selectedProduct) throw new Error('Selecione um produto válido.');
             const qSold = Number(quantitySold);
             const estCost = Number(estimatedCost);
+            const salePrice = Number(salePricePerUnit);
             if (!qSold || !estCost) throw new Error('Preencha todos os campos obrigatórios.');
-            const salePricePerUnit = 0; // TODO: adicionar campo de preço de venda por unidade no formulário
-            const totalSaleAmount = qSold * salePricePerUnit;
+            const totalSaleAmount = qSold * salePrice;
             const estimatedCostAtSale = estCost * qSold;
             const calculatedProfit = totalSaleAmount - estimatedCostAtSale;
             const repo = new SalesRecordRepositoryFirebase();
@@ -46,7 +104,7 @@ export default function CreateSalePage() {
                 productionBatchId: undefined, // TODO: adicionar campo se necessário
                 quantitySold: qSold,
                 unitOfMeasure: selectedProduct.unitOfMeasure,
-                salePricePerUnit,
+                salePricePerUnit: salePrice,
                 totalSaleAmount,
                 estimatedCostAtSale,
                 calculatedProfit,
@@ -56,12 +114,18 @@ export default function CreateSalePage() {
                 createdAt: new Date(),
                 createdBy: auth.currentUser?.uid || 'anon',
             });
+            // Atualizar estoque após venda
+            const inventoryRepo = new InventoryRepositoryFirebase();
+            const updateInventoryUseCase = new UpdateInventoryQuantityUseCase(inventoryRepo);
+            await updateInventoryUseCase.execute(selectedProduct.id, qSold);
             setSnackbar({ open: true, message: 'Venda registrada com sucesso!', severity: 'success' });
             setProduct('');
             setEstimatedCostAtSale('');
+            setSalePricePerUnit('');
             setQuantitySold('');
             setClientInfo('');
             setNotes('');
+            setAvailableStock(null);
         } catch (e: any) {
             setSnackbar({ open: true, message: e.message || 'Erro ao registrar venda', severity: 'error' });
         } finally {
@@ -100,12 +164,25 @@ export default function CreateSalePage() {
                     fullWidth
                     margin="normal"
                     required
+                    error={!!stockError}
+                    helperText={stockError ? <span style={{ color: 'red' }}>{stockError}</span> : (availableStock !== null && product ? <span style={{ color: 'green' }}>Disponível: {availableStock} kg</span> : '')}
                 />
+                <Box mb={2} mt={1}>
+                    <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                        Custo Estimado por Unidade:
+                        <span style={{ color: '#388e3c', marginLeft: 8 }}>
+                            R$ {estimatedCost ? Number(estimatedCost).toFixed(2) : '--'}
+                        </span>
+                    </Typography>
+                </Box>
                 <TextField
-                    label="Custo Estimado por Unidade"
+                    label="Preço de Venda por Unidade"
                     type="number"
-                    value={estimatedCost}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEstimatedCostAtSale(e.target.value.replace(/[^0-9,]/g, ''))}
+                    value={salePricePerUnit}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const valor = e.target.value.replace(',', '.');
+                        setSalePricePerUnit(valor);
+                    }}
                     required
                     fullWidth
                     margin="normal"
@@ -113,6 +190,10 @@ export default function CreateSalePage() {
                     InputProps={{
                         startAdornment: <InputAdornment position="start">R$</InputAdornment>,
                         inputMode: 'decimal',
+                    }}
+                    inputProps={{
+                        step: 'any',
+                        min: 0
                     }}
                 />
                 <TextField
@@ -138,7 +219,7 @@ export default function CreateSalePage() {
                     fullWidth
                     size="large"
                     sx={{ mt: 2, fontWeight: 700 }}
-                    disabled={loading}
+                    disabled={loading || !!stockError}
                 >
                     {loading ? 'Registrando...' : 'Registrar'}
                 </Button>
