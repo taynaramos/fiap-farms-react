@@ -33,7 +33,6 @@ export default function HomePage() {
     { key: Routes.paths.cadastrar_produto, label: 'Cadastrar Produto', icon: '➕' },
     { key: Routes.paths.controle_estoque, label: 'Controle de Estoque e Vendas', icon: '📦' },
     { key: Routes.paths.metas, label: 'Metas e Notificações', icon: '🎯' },
-    { key: Routes.paths.perfil, label: 'Perfil', icon: '👤' },
     ...(appUser.role === 'admin' ? [{ key: Routes.paths.admin, label: 'Administração', icon: '🛡️' }] : []),
     { key: Routes.paths.sair, label: 'Sair', icon: '🚪', color: '#f44336' },
   ];
