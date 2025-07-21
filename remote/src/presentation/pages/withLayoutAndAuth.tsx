@@ -83,7 +83,6 @@ function withLayoutAndAuth<T extends object>(
         icon: "📦",
       },
       { key: Routes.paths.metas, label: "Metas e Notificações", icon: "🎯" },
-      { key: Routes.paths.perfil, label: "Perfil", icon: "👤" },
       ...(appUser.role === "admin"
         ? [{ key: Routes.paths.admin, label: "Administração", icon: "🛡️" }]
         : []),
