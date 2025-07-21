@@ -1,7 +1,10 @@
+import { Provider } from "react-redux";
 import {
-	Route,
-	Routes as RouterRoutes
+  Route,
+  Routes as RouterRoutes,
 } from "react-router-dom";
+import { store } from "./presentation/store";
+
 import Routes from "shared/routes";
 import { AuthProvider } from "./infra/firebase/AuthContext";
 import CreateProductPage from "./presentation/pages/CreateProductPage";
@@ -12,31 +15,30 @@ import ProductionDashboardPage from "./presentation/pages/ProductionDashboardPag
 import SalesDashboardPage from "./presentation/pages/SalesDashboardPage";
 
 const RemoteRoutes = () => {
-
   return (
-      <AuthProvider>
-        <RouterRoutes>
-          <Route
-            path={Routes.paths.dashboard_vendas}
-            element={<SalesDashboardPage />}
-          />
-          <Route
-            path={Routes.paths.dashboard_producao}
-            element={<ProductionDashboardPage />}
-          />
-          <Route
-            path={Routes.paths.cadastrar_produto}
-            element={<CreateProductPage />}
-          />
-          <Route
-            path={Routes.paths.controle_estoque}
-            element={<div>controle_estoque</div>}
-          />
-          <Route path={Routes.paths.admin} element={<CreateUserPage />} />
-          <Route path={Routes.paths.metas} element={<GoalsPage />} />
-          <Route path={Routes.paths.sair} element={<Logout />} />
-        </RouterRoutes>
-      </AuthProvider>
+    <AuthProvider>
+      <RouterRoutes>
+        <Route
+          path={Routes.paths.dashboard_vendas}
+          element={<SalesDashboardPage />}
+        />
+        <Route
+          path={Routes.paths.dashboard_producao}
+          element={<ProductionDashboardPage />}
+        />
+        <Route
+          path={Routes.paths.cadastrar_produto}
+          element={<CreateProductPage />}
+        />
+        <Route
+          path={Routes.paths.controle_estoque}
+          element={<div>controle_estoque</div>}
+        />
+        <Route path={Routes.paths.admin} element={<CreateUserPage />} />
+        <Route path={Routes.paths.metas} element={<GoalsPage />} />
+        <Route path={Routes.paths.sair} element={<Logout />} />
+      </RouterRoutes>
+    </AuthProvider>
   );
 };
 
@@ -46,5 +48,9 @@ globalStyle.innerHTML = `body, * { font-family: 'Roboto', Arial, sans-serif !imp
 document.head.appendChild(globalStyle);
 
 export default function App() {
-  return <RemoteRoutes />;
+  return (
+    <Provider store={store}>
+      <RemoteRoutes />
+    </Provider>
+  );
 }

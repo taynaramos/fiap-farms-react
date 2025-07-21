@@ -1,11 +1,12 @@
-import React from 'react';
+import { useDispatch } from 'react-redux';
+import { setBatches } from 'src/presentation/store/slices/batchSlice';
+import { GoalStatus } from '../../../domain/entities/Goal';
 import { ProductionBatch } from '../../../domain/entities/ProductionBatch';
 import { StatusKey } from '../../../domain/enums/StatusKey';
-import { ProductionBatchRepositoryFirebase } from '../../../infra/repositories/ProductionBatchRepositoryFirebase';
 import { UpdateProductionBatchStatusUseCase } from '../../../domain/usecases/production/UpdateProductionBatchStatusUseCase';
-import AddBatchButton from './AddBatchButton';
 import { GoalRepositoryFirebase } from '../../../infra/repositories/GoalRepositoryFirebase';
-import { GoalStatus } from '../../../domain/entities/Goal';
+import { ProductionBatchRepositoryFirebase } from '../../../infra/repositories/ProductionBatchRepositoryFirebase';
+import AddBatchButton from './AddBatchButton';
 
 interface ProductionBatchListProps {
   filteredBatches: ProductionBatch[];
@@ -27,18 +28,27 @@ function getNextStatus(current: StatusKey): StatusKey | null {
   }
 }
 
-export default function ProductionBatchList({ filteredBatches, statusLabels, onStatusChange, onAddBatch }: ProductionBatchListProps) {
+export default function ProductionBatchList({
+  filteredBatches,
+  statusLabels,
+  onStatusChange,
+  onAddBatch,
+}: ProductionBatchListProps) {
+  const dispatch = useDispatch();
+
   const handleAdvanceStatus = async (batch: ProductionBatch) => {
     const nextStatus = getNextStatus(batch.status);
     if (!nextStatus) return;
+
     const repo = new ProductionBatchRepositoryFirebase();
     const useCase = new UpdateProductionBatchStatusUseCase(repo);
+
     await useCase.execute(batch.id, nextStatus);
-    // Regra de negócio para metas
+
     if (nextStatus === StatusKey.COLHIDO) {
       const goalRepo = new GoalRepositoryFirebase();
       const goals = await goalRepo.getActiveGoalsByProduct(batch.productId);
-      
+
       for (const goal of goals) {
         if (batch.estimatedQuantity >= goal.targetValue) {
           try {
@@ -47,11 +57,10 @@ export default function ProductionBatchList({ filteredBatches, statusLabels, onS
               ...goalWithoutAchievedAt,
               currentValue: batch.estimatedQuantity,
               status: GoalStatus.ATINGIDA,
-              // achievedAt será preenchido no useEffect da página de metas
             });
-            console.log("meta atingida com sucesso:", goal.name);
+            console.log('meta atingida com sucesso:', goal.name);
           } catch (error) {
-            console.error("erro ao atualizar meta:", error);
+            console.error('erro ao atualizar meta:', error);
           }
         } else {
           try {
@@ -61,53 +70,89 @@ export default function ProductionBatchList({ filteredBatches, statusLabels, onS
               currentValue: batch.estimatedQuantity,
               status: GoalStatus.ATIVA,
             });
-            console.log("meta atualizada mas não atingida:", goal.name);
+            console.log('meta atualizada mas não atingida:', goal.name);
           } catch (error) {
-            console.error("erro ao atualizar meta:", error);
+            console.error('erro ao atualizar meta:', error);
           }
         }
       }
     }
+
+    // Atualiza o estado global com os lotes atualizados
+    const updatedBatches = filteredBatches.map((b) =>
+      b.id === batch.id ? { ...b, status: nextStatus } : b
+    );
+
+    dispatch(setBatches(updatedBatches));
+
     if (onStatusChange) onStatusChange();
   };
 
   return (
     <div style={{ maxWidth: 600, margin: '0 auto' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '24px 0 12px 0' }}>
-        <h3 style={{ margin: 0, fontWeight: 700 }}>Lotes de Produção ({filteredBatches.length})</h3>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          margin: '24px 0 12px 0',
+        }}
+      >
+        <h3 style={{ margin: 0, fontWeight: 700 }}>
+          Lotes de Produção ({filteredBatches.length})
+        </h3>
         <AddBatchButton onClick={onAddBatch} />
       </div>
-      {filteredBatches.map(batch => {
+
+      {filteredBatches.map((batch) => {
         const nextStatus = getNextStatus(batch.status);
-        const nextStatusLabel = nextStatus ? statusLabels.find(s => s.key === nextStatus) : undefined;
+        const nextStatusLabel = nextStatus
+          ? statusLabels.find((s) => s.key === nextStatus)
+          : undefined;
+
         return (
-          <div key={batch.id} style={{
-            background: '#faf7fa',
-            borderRadius: 12,
-            boxShadow: '0 2px 8px #0001',
-            padding: 18,
-            marginBottom: 16,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 8,
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontWeight: 600, fontSize: 18 }}>{batch.productName}</div>
-              <span style={{
-                background: 'var(--grey-light)',
-                color: `var(--status-${batch.status.toLowerCase()})`,
-                borderRadius: 8,
-                padding: '4px 14px',
-                fontWeight: 600,
-                fontSize: 14,
-                marginLeft: 8,
-              }}>
-                {statusLabels.find(s => s.key === batch.status)?.label || batch.status}
+          <div
+            key={batch.id}
+            style={{
+              background: '#faf7fa',
+              borderRadius: 12,
+              boxShadow: '0 2px 8px #0001',
+              padding: 18,
+              marginBottom: 16,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <div style={{ fontWeight: 600, fontSize: 18 }}>
+                {batch.productName}
+              </div>
+              <span
+                style={{
+                  background: 'var(--grey-light)',
+                  color: `var(--status-${batch.status.toLowerCase()})`,
+                  borderRadius: 8,
+                  padding: '4px 14px',
+                  fontWeight: 600,
+                  fontSize: 14,
+                  marginLeft: 8,
+                }}
+              >
+                {statusLabels.find((s) => s.key === batch.status)?.label ||
+                  batch.status}
               </span>
             </div>
             <div style={{ fontSize: 13, color: '#888' }}>
-              Início: {batch.startDate?.toDate?.().toLocaleDateString?.() || '-'} &nbsp;|
-              Colheita: {batch.estimatedEndDate?.toDate?.().toLocaleDateString?.() || '-'}
+              Início: {batch.startDate?.toDate?.().toLocaleDateString?.() || '-'}{' '}
+              &nbsp;| Colheita:{' '}
+              {batch.estimatedEndDate?.toDate?.().toLocaleDateString?.() || '-'}
             </div>
             <div style={{ fontSize: 13, color: '#888' }}>
               Estimado: {batch.estimatedQuantity} kg
@@ -138,4 +183,4 @@ export default function ProductionBatchList({ filteredBatches, statusLabels, onS
       })}
     </div>
   );
-} 
+}
