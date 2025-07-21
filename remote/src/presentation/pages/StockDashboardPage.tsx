@@ -51,6 +51,7 @@ function StockDashboardPage() {
           alignItems: 'center',
           justifyContent: 'space-between',
           mb: 3,
+          mt: 4,
         }}
       >
         <Typography variant="h5" fontWeight={600}>
@@ -104,6 +105,7 @@ function StockDashboardPage() {
           alignItems: 'center',
           justifyContent: 'space-between',
           mb: 3,
+          mt: 4,
         }}
       >
         <Typography variant="h5" fontWeight={600}>
