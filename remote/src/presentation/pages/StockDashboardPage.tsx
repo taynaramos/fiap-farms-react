@@ -3,7 +3,8 @@ import { Box, Button, Container, Typography, Tabs, Tab } from '@mui/material';
 import CreateStockPage from './CreateStockPage';
 import CreateSalePage from './CreateSalePage';
 import withLayoutAndAuth from './withLayoutAndAuth';
-import StockProductCard from '../components/stockDashboard/ProductsList';
+import StockProductCard from '../components/stockDashboard/StockProductCard';
+import SalesRegisterCard from '../components/stockDashboard/SalesRegisterCard';
 
 function StockDashboardPage() {
   const [showCreate, setShowCreate] = useState(false);
@@ -140,7 +141,9 @@ function StockDashboardPage() {
             mt: 2,
           }}
         >
-          <Typography variant="body1">Nenhuma venda registrada.</Typography>
+          {stockProducts.map((item, index) => (
+            <SalesRegisterCard key={index} item={item} index={index} />
+          ))}
         </Box>
       )}
     </>
