@@ -4,13 +4,14 @@ import { GetProductsUseCase } from '../../domain/usecases/product/GetProductsUse
 import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepositoryFirebase';
 import { Product } from '../../domain/entities/Product';
 import { CreateSalesRecordUseCase } from '../../domain/usecases/sales/CreateSalesRecordUseCase';
-import { SalesRecord } from '../../domain/entities/SalesRecord';
 import { SalesRecordRepositoryFirebase } from '../../infra/repositories/SalesRecordRepositoryFirebase';
 import { auth } from 'shared/firebase';
 import { GetInventoryUseCase } from '../../domain/usecases/inventory/GetInventoryUseCase';
 import { InventoryRepositoryFirebase } from '../../infra/repositories/InventoryRepositoryFirebase';
 import { Inventory } from '../../domain/entities/Inventory';
 import { UpdateInventoryQuantityUseCase } from '../../domain/usecases/inventory/UpdateInventoryQuantityUseCase';
+import { GoalRepositoryFirebase } from '../../infra/repositories/GoalRepositoryFirebase';
+import { UpdateGoalCurrentValueUseCase } from '../../domain/usecases/goal/UpdateGoalCurrentValueUseCase';
 
 export default function CreateSalePage() {
     const [product, setProduct] = useState('');
@@ -118,6 +119,19 @@ export default function CreateSalePage() {
             const inventoryRepo = new InventoryRepositoryFirebase();
             const updateInventoryUseCase = new UpdateInventoryQuantityUseCase(inventoryRepo);
             await updateInventoryUseCase.execute(selectedProduct.id, qSold);
+            // Atualizar metas após venda
+            const goalRepo = new GoalRepositoryFirebase();
+            const updateGoalCurrentValueUseCase = new UpdateGoalCurrentValueUseCase(goalRepo);
+            const metasAtingidas = await updateGoalCurrentValueUseCase.execute({
+                productId: selectedProduct.id,
+                quantitySold: qSold,
+                totalSaleAmount
+            });
+            if (metasAtingidas.length > 0) {
+                metasAtingidas.forEach(meta => {
+                    setSnackbar({ open: true, message: `Meta atingida: ${meta.name}`, severity: 'success' });
+                });
+            }
             setSnackbar({ open: true, message: 'Venda registrada com sucesso!', severity: 'success' });
             setProduct('');
             setEstimatedCostAtSale('');
@@ -165,7 +179,7 @@ export default function CreateSalePage() {
                     margin="normal"
                     required
                     error={!!stockError}
-                    helperText={stockError ? <span style={{ color: 'red' }}>{stockError}</span> : (availableStock !== null && product ? <span style={{ color: 'green' }}>Disponível: {availableStock} kg</span> : '')}
+                    helperText={stockError ? <span style={{ color: 'red' }}>{stockError}</span> : (availableStock !== null && product ? <span style={{ color: 'green' }}>Disponível: {availableStock} {products.find(p => p.id === product)?.unitOfMeasure || ''}</span> : '')}
                 />
                 <Box mb={2} mt={1}>
                     <Typography variant="body2" color="text.secondary" fontWeight={600}>
