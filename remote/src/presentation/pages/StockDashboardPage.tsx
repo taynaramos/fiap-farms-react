@@ -184,6 +184,9 @@ function StockDashboardPage() {
           ml: -4,
           width: '100%',
           position: 'fixed',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
           top: 0,
           zIndex: 20,
         }}
