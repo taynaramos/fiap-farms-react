@@ -9,7 +9,6 @@ function StockDashboardPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [tab, setTab] = useState(0);
 
-  // Dados mockados para teste (substitua pelos dados reais depois)
   const stockProducts = [
     {
       productName: "Tomate Italiano",
@@ -23,9 +22,26 @@ function StockDashboardPage() {
       actualQuantity: 90,
       estimatedCostPerUnit: 0.80,
     },
+    {
+      productName: "Alface Crespa",
+      estimatedQuantity: 100,
+      actualQuantity: 90,
+      estimatedCostPerUnit: 0.80,
+    },
+    {
+      productName: "Alface Crespa",
+      estimatedQuantity: 100,
+      actualQuantity: 90,
+      estimatedCostPerUnit: 0.80,
+    },
+    {
+      productName: "Alface Crespa",
+      estimatedQuantity: 100,
+      actualQuantity: 90,
+      estimatedCostPerUnit: 0.80,
+    },
   ];
 
-  // Conteúdo das abas
   const renderStockTab = () => (
     <>
       <Container
@@ -46,7 +62,17 @@ function StockDashboardPage() {
       {showCreate ? (
         <CreateStockPage />
       ) : (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 2,
+            mt: 2,
+          }}
+        >
           {stockProducts.map((item, index) => (
             <StockProductCard key={index} item={item} index={index} />
           ))}
@@ -81,12 +107,53 @@ function StockDashboardPage() {
   );
 
   return (
-    <Box sx={{ fontFamily: 'Roboto, Arial, sans-serif', px: 3, py: 4 }}>
-      <Tabs value={tab} onChange={(_, v) => { setShowCreate(false); setTab(v); }} sx={{ mb: 2 }}>
-        <Tab label="Estoque" />
-        <Tab label="Vendas" />
-      </Tabs>
-      {tab === 0 ? renderStockTab() : renderSalesTab()}
+    <Box sx={{ fontFamily: 'Roboto, Arial, sans-serif', m: 0, p: 0 }}>
+      <Box
+        sx={{
+          bgcolor: '#43a047', // verde igual ao header
+          borderRadius: 0,
+          px: 2,
+          py: 0,
+          m: 0,
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+        }}
+      >
+        <Tabs
+          value={tab}
+          onChange={(_, v) => { setShowCreate(false); setTab(v); }}
+          TabIndicatorProps={{ style: { background: '#fff', height: 4, borderRadius: 2 } }}
+        >
+          <Tab
+            label="Estoque"
+            sx={{
+              color: '#fff',
+              fontWeight: 600,
+              mx: 2,
+              '&.Mui-selected': {
+                color: '#fff',
+                textShadow: '0 1px 8px #388e3c',
+              },
+            }}
+          />
+          <Tab
+            label="Vendas"
+            sx={{
+              color: '#fff',
+              fontWeight: 600,
+              mx: 2,
+              '&.Mui-selected': {
+                color: '#fff',
+                textShadow: '0 1px 8px #388e3c',
+              },
+            }}
+          />
+        </Tabs>
+      </Box>
+      <Box sx={{ px: 3, py: 4 }}>
+        {tab === 0 ? renderStockTab() : renderSalesTab()}
+      </Box>
     </Box>
   );
 }
