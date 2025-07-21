@@ -55,9 +55,23 @@ function StockDashboardPage() {
         <Typography variant="h5" fontWeight={600}>
           Estoque Atual
         </Typography>
-        <Button variant="contained" color="primary" onClick={() => setShowCreate(true)}>
-          Adicionar ao estoque
-        </Button>
+        {showCreate ? (
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={() => setShowCreate(false)}
+          >
+            Voltar
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setShowCreate(true)}
+          >
+            Adicionar ao estoque
+          </Button>
+        )}
       </Container>
       {showCreate ? (
         <CreateStockPage />
