@@ -133,12 +133,16 @@ function StockDashboardPage() {
                 <StockProductCard
                   key={productId}
                   item={{
+                    id: productId,
+                    productId,
                     productName: prod.productName,
                     availableQuantity: disponivel,
                     soldQuantity: vendido,
                     unitOfMeasure: prod.unitOfMeasure,
                     estimatedCostPerUnit: prod.estimatedCostPerUnit,
                     lastUpdated: prod.lastUpdated,
+                    productionBatchId: null,
+                    createdBy: '',
                   }}
                   index={index}
                 />

@@ -165,7 +165,7 @@ export default function CreateSalePage() {
                         labelId="product-label"
                         value={product}
                         label="Produto *"
-                        onChange={(e: React.ChangeEvent<{ value: unknown }>) => setProduct(e.target.value as string)}
+                        onChange={(e) => setProduct(e.target.value as string)}
                         required
                         disabled={loadingProducts}
                     >
