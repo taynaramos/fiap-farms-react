@@ -94,6 +94,12 @@ function GoalsPage() {
     }
   }, [goals, notifyOnAchieve]);
 
+  // Atualizar metas ao receber notificação de meta atingida
+  useEffect(() => {
+    // Sempre que uma meta for atingida, recarregar as metas para atualizar o progresso
+    fetchGoals();
+  }, [snackbar]);
+
   const handleFormChange = (field: keyof Goal, value: any) => {
     setForm((f) => ({ ...f, [field]: value }));
   };
@@ -138,6 +144,13 @@ function GoalsPage() {
     (g) => g.status === GoalStatus.ATIVA || g.status === GoalStatus.ATINGIDA
   );
   const metasAtingidas = goals.filter((g) => g.status === GoalStatus.ATINGIDA);
+
+  // Unidades dinâmicas para metas de vendas
+  const selectedProduct = products.find((p) => p.id === form.entityId);
+  const unidadesVendas = ["R$"];
+  if (form.type === "vendas" && selectedProduct && selectedProduct.unitOfMeasure) {
+    unidadesVendas.push(selectedProduct.unitOfMeasure);
+  }
 
   return (
     <Box sx={{ maxWidth: 900, mx: "auto", mt: 4 }}>
@@ -206,11 +219,17 @@ function GoalsPage() {
             required
             sx={{ flex: 1, minWidth: 120 }}
           >
-            {UNITS.map((opt) => (
-              <MenuItem key={opt.value} value={opt.value}>
-                {opt.label}
-              </MenuItem>
-            ))}
+            {form.type === "vendas"
+              ? unidadesVendas.map((unit) => (
+                  <MenuItem key={unit} value={unit}>
+                    {unit === "R$" ? "R$ (Valor em dinheiro)" : unit}
+                  </MenuItem>
+                ))
+              : UNITS.map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
           </TextField>
           <TextField
             label="Data de Início"
@@ -356,14 +375,15 @@ function GoalsPage() {
           </List>
         )}
       </Paper>
-      <Button
-        variant="outlined"
-        color="primary"
-        onClick={() => setShowHistory((h) => !h)}
-        sx={{ mb: 2 }}
-      >
-        {showHistory ? "Ocultar Histórico" : "Ver Histórico de Metas Atingidas"}
-      </Button>
+      <Box display="flex" gap={2} mb={2}>
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={() => setShowHistory((h) => !h)}
+        >
+          {showHistory ? "Ocultar Histórico" : "Ver Histórico de Metas Atingidas"}
+        </Button>
+      </Box>
       {showHistory && (
         <Paper sx={{ p: 3, borderRadius: 3 }}>
           <Typography variant="h6" fontWeight={600} mb={2}>

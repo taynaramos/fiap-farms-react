@@ -48,6 +48,31 @@ function StockDashboardPage() {
     }
   }, [showCreate, tab]);
 
+  // Agrupar estoques por produto
+  const inventoryByProduct: Record<string, { productName: string; unitOfMeasure: string; estimatedCostPerUnit: number; lastUpdated: any; totalStock: number; }> = {};
+  inventory.forEach(item => {
+    if (!inventoryByProduct[item.productId]) {
+      inventoryByProduct[item.productId] = {
+        productName: item.productName,
+        unitOfMeasure: item.unitOfMeasure,
+        estimatedCostPerUnit: item.estimatedCostPerUnit,
+        lastUpdated: item.lastUpdated,
+        totalStock: 0
+      };
+    }
+    inventoryByProduct[item.productId].totalStock += item.availableQuantity;
+    // Pega a última atualização mais recente
+    if (item.lastUpdated && (!inventoryByProduct[item.productId].lastUpdated || new Date(item.lastUpdated) > new Date(inventoryByProduct[item.productId].lastUpdated))) {
+      inventoryByProduct[item.productId].lastUpdated = item.lastUpdated;
+    }
+  });
+
+  // Calcular vendas por produto
+  const salesByProduct: Record<string, number> = {};
+  sales.forEach(sale => {
+    salesByProduct[sale.productId] = (salesByProduct[sale.productId] || 0) + sale.quantitySold;
+  });
+
   const renderStockTab = () => (
     <>
       <Container
@@ -98,12 +123,27 @@ function StockDashboardPage() {
             mt: 2,
           }}
         >
-          {inventory.length === 0 ? (
+          {Object.keys(inventoryByProduct).length === 0 ? (
             <Typography variant="body2" color="text.secondary">Nenhum item de estoque cadastrado.</Typography>
           ) : (
-            inventory.map((item, index) => (
-              <StockProductCard key={item.id} item={item} index={index} />
-            ))
+            Object.entries(inventoryByProduct).map(([productId, prod], index) => {
+              const disponivel = prod.totalStock;
+              const vendido = salesByProduct[productId] || 0;
+              return (
+                <StockProductCard
+                  key={productId}
+                  item={{
+                    productName: prod.productName,
+                    availableQuantity: disponivel,
+                    soldQuantity: vendido,
+                    unitOfMeasure: prod.unitOfMeasure,
+                    estimatedCostPerUnit: prod.estimatedCostPerUnit,
+                    lastUpdated: prod.lastUpdated,
+                  }}
+                  index={index}
+                />
+              );
+            })
           )}
         </Box>
       )}
