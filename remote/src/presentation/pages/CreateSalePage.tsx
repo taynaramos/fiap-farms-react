@@ -1,16 +1,15 @@
+import { Alert, Box, Button, CircularProgress, FormControl, InputAdornment, InputLabel, MenuItem, Paper, Select, Snackbar, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, MenuItem, Box, Typography, Paper, Select, InputLabel, FormControl, CircularProgress, Snackbar, Alert, InputAdornment } from '@mui/material';
-import { GetProductsUseCase } from '../../domain/usecases/product/GetProductsUseCase';
-import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepositoryFirebase';
-import { Product } from '../../domain/entities/Product';
-import { CreateSalesRecordUseCase } from '../../domain/usecases/sales/CreateSalesRecordUseCase';
-import { SalesRecord } from '../../domain/entities/SalesRecord';
-import { SalesRecordRepositoryFirebase } from '../../infra/repositories/SalesRecordRepositoryFirebase';
 import { auth } from 'shared/firebase';
-import { GetInventoryUseCase } from '../../domain/usecases/inventory/GetInventoryUseCase';
-import { InventoryRepositoryFirebase } from '../../infra/repositories/InventoryRepositoryFirebase';
 import { Inventory } from '../../domain/entities/Inventory';
+import { Product } from '../../domain/entities/Product';
+import { GetInventoryUseCase } from '../../domain/usecases/inventory/GetInventoryUseCase';
 import { UpdateInventoryQuantityUseCase } from '../../domain/usecases/inventory/UpdateInventoryQuantityUseCase';
+import { GetProductsUseCase } from '../../domain/usecases/product/GetProductsUseCase';
+import { CreateSalesRecordUseCase } from '../../domain/usecases/sales/CreateSalesRecordUseCase';
+import { InventoryRepositoryFirebase } from '../../infra/repositories/InventoryRepositoryFirebase';
+import { ProductRepositoryFirebase } from '../../infra/repositories/ProductRepositoryFirebase';
+import { SalesRecordRepositoryFirebase } from '../../infra/repositories/SalesRecordRepositoryFirebase';
 
 export default function CreateSalePage() {
     const [product, setProduct] = useState('');
@@ -145,7 +144,7 @@ export default function CreateSalePage() {
                         labelId="product-label"
                         value={product}
                         label="Produto *"
-                        onChange={(e: React.ChangeEvent<{ value: unknown }>) => setProduct(e.target.value as string)}
+                        onChange={e => setProduct(e.target.value as string)}
                         required
                         disabled={loadingProducts}
                     >
