@@ -1,17 +1,18 @@
-import { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "shared/firebase";
-import { useNavigate } from "react-router-dom";
 import {
+  Alert,
   Box,
-  Container,
-  TextField,
-  Typography,
   Button,
+  Container,
   Paper,
   Stack,
-  Alert,
+  TextField,
+  Typography,
 } from "@mui/material";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { auth, db } from "shared/firebase";
 import Routes, { loginPath, remotePath } from "shared/routes";
 
 export default function CreateAccountPage() {
@@ -33,14 +34,18 @@ export default function CreateAccountPage() {
     }
 
     try {
-      const newUser = await createUserWithEmailAndPassword(
-        auth,
+      // Cria usuário no Auth
+      const newUser = await createUserWithEmailAndPassword(auth, email, password);
+
+      // Cria documento no Firestore com isFirstAccess: true
+      await setDoc(doc(db, "users", newUser.user.uid), {
         email,
-        password
-      );
-      window.dispatchEvent(
-        new CustomEvent("user-logged-in", { detail: newUser })
-      );
+        isFirstAccess: true,
+        createdAt: new Date(),
+      });
+
+      window.dispatchEvent(new CustomEvent("user-logged-in", { detail: newUser }));
+
       navigate(remotePath(Routes.paths.dashboard_producao));
     } catch (error) {
       setError("Erro ao criar conta. Tente novamente.");
