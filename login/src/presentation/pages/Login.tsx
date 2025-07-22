@@ -1,8 +1,9 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "shared/firebase";
-import { loginPath, remotePath } from "shared/routes";
+import { auth, db } from "shared/firebase";
+import Routes, { loginPath, remotePath } from "shared/routes";
 
 import {
   Alert,
@@ -14,7 +15,6 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import Routes from "shared/routes";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -49,6 +49,20 @@ export default function LoginPage() {
 
     try {
       const userCred = await signInWithEmailAndPassword(auth, email, password);
+
+      const userDocRef = doc(db, "users", userCred.user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userData = userDocSnap.data();
+
+        if (userData.isFirstAccess) {
+          navigate(remotePath(Routes.paths.changePassword));
+          return;
+        }
+      }
+
+      // Caso contrário, redireciona para dashboard normal
       window.dispatchEvent(
         new CustomEvent("user-logged-in", { detail: userCred })
       );
@@ -107,12 +121,7 @@ export default function LoginPage() {
 
             {firebaseError && <Alert severity="error">{firebaseError}</Alert>}
 
-            <Button
-              variant="contained"
-              color="success"
-              fullWidth
-              onClick={login}
-            >
+            <Button variant="contained" color="success" fullWidth onClick={login}>
               Entrar
             </Button>
 

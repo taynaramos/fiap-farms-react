@@ -13,7 +13,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "shared/firebase";
-import Routes, { loginPath, remotePath } from "shared/routes";
+import Routes, { loginPath } from "shared/routes";
 
 export default function CreateAccountPage() {
   const [email, setEmail] = useState("");
@@ -46,7 +46,8 @@ export default function CreateAccountPage() {
 
       window.dispatchEvent(new CustomEvent("user-logged-in", { detail: newUser }));
 
-      navigate(remotePath(Routes.paths.dashboard_producao));
+      navigate(loginPath(Routes.paths.login));
+      alert('Usuário criado com sucesso')
     } catch (error) {
       setError("Erro ao criar conta. Tente novamente.");
     }
