@@ -13,6 +13,8 @@ pnpm run install:deps
 pnpm run dev
 ```
 
+Observação: Recomendamos utilizar a versão 22.11 do Node para rodar o projeto
+
 Abra o navegador em: [http://localhost:4173/](http://localhost:4173/) para ver o resultado.
 
 ## Rodando com Docker no WSL
