@@ -1,8 +1,9 @@
 import {
-	Route,
-	Routes as RouterRoutes
+  Route,
+  Routes as RouterRoutes
 } from "react-router-dom";
 import Routes from "shared/routes";
+import { BatchStatusProvider } from "./context/BatchStatusContext";
 import { AuthProvider } from "./infra/firebase/AuthContext";
 import CreateProductPage from "./presentation/pages/CreateProductPage";
 import CreateUserPage from "./presentation/pages/CreateUserPage";
@@ -16,27 +17,29 @@ const RemoteRoutes = () => {
 
   return (
       <AuthProvider>
-        <RouterRoutes>
-          <Route
-            path={Routes.paths.dashboard_vendas}
-            element={<SalesDashboardPage />}
-          />
-          <Route
-            path={Routes.paths.dashboard_producao}
-            element={<ProductionDashboardPage />}
-          />
-          <Route
-            path={Routes.paths.cadastrar_produto}
-            element={<CreateProductPage />}
-          />
-          <Route
-            path={Routes.paths.controle_estoque}
-            element={<StockDashboardPage />}
-          />
-          <Route path={Routes.paths.admin} element={<CreateUserPage />} />
-          <Route path={Routes.paths.metas} element={<GoalsPage />} />
-          <Route path={Routes.paths.sair} element={<Logout />} />
-        </RouterRoutes>
+            <BatchStatusProvider>
+              <RouterRoutes>
+                <Route
+                  path={Routes.paths.dashboard_vendas}
+                  element={<SalesDashboardPage />}
+                />
+                <Route
+                  path={Routes.paths.dashboard_producao}
+                  element={<ProductionDashboardPage />}
+                />
+                <Route
+                  path={Routes.paths.cadastrar_produto}
+                  element={<CreateProductPage />}
+                />
+                <Route
+                  path={Routes.paths.controle_estoque}
+                  element={<StockDashboardPage />}
+                />
+                <Route path={Routes.paths.admin} element={<CreateUserPage />} />
+                <Route path={Routes.paths.metas} element={<GoalsPage />} />
+                <Route path={Routes.paths.sair} element={<Logout />} />
+              </RouterRoutes>
+            </BatchStatusProvider>
       </AuthProvider>
   );
 };
